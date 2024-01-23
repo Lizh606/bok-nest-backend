@@ -5,22 +5,25 @@
  * @LastEditTime: 2023-12-13 15:06:45
  * @Description: 请填写简介
  */
-import { Module } from '@nestjs/common';
+import { Global, Logger, Module } from '@nestjs/common';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 // import * as dotenv from 'dotenv';
 // import * as config from 'config';
 import { TypeOrmModule, TypeOrmModuleOptions } from '@nestjs/typeorm';
 import * as Joi from 'joi';
+import { LoggerModule } from 'nestjs-pino';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import configuration from './configuration';
 import { ConfigEnum } from './enum/config.enum';
 import { ResourceModule } from './resource/resource.module';
 import { UserModule } from './user/user.module';
+import { LogsModule } from './logs/logs.module';
 // config插件获取获取（自动合并）
 // console.log(config.get('database'), config);
 const envFilePath = `.env.${process.env.NODE_ENV || 'development'}`;
 
+@Global()
 @Module({
   imports: [
     UserModule,
@@ -57,11 +60,23 @@ const envFilePath = `.env.${process.env.NODE_ENV || 'development'}`;
           entities: [__dirname + '/**/*.entity{.ts,.js}'],
           // 同步本地schema和数据库
           synchronize: true,
-          logging: process.env.NODE_ENV === 'development',
+          // logging: process.env.NODE_ENV === 'development',
         }) as TypeOrmModuleOptions,
     }),
+    LoggerModule.forRoot({
+      pinoHttp: {
+        transport: {
+          target: 'pino-pretty',
+          options: {
+            colorize: true,
+          },
+        },
+      },
+    }),
+    LogsModule,
   ],
   controllers: [AppController],
-  providers: [AppService],
+  providers: [AppService, Logger],
+  exports: [Logger],
 })
 export class AppModule {}

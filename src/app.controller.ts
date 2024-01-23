@@ -5,7 +5,7 @@
  * @LastEditTime: 2023-12-14 09:34:26
  * @Description: 请填写简介
  */
-import { Controller, Get, Query } from '@nestjs/common';
+import { Controller, Get, Logger, Query } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { AppService } from './app.service';
 import { ConfigEnum } from './enum/config.enum';
@@ -14,7 +14,10 @@ export class AppController {
   constructor(
     private readonly appService: AppService,
     private readonly configService: ConfigService,
-  ) {}
+    private readonly logger: Logger,
+  ) {
+    this.logger.log('123');
+  }
 
   @Get()
   getHello() {

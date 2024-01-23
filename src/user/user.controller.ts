@@ -10,6 +10,7 @@ import {
   Controller,
   Delete,
   Get,
+  Inject,
   // Patch,
   Param,
   Post,
@@ -17,6 +18,8 @@ import {
   Req,
   Res,
 } from '@nestjs/common';
+import { WINSTON_MODULE_NEST_PROVIDER } from 'nest-winston';
+import { Logger } from 'nestjs-pino';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { UserService } from './user.service';
@@ -24,7 +27,12 @@ import { UserService } from './user.service';
 
 @Controller({ path: 'user', version: '1' })
 export class UserController {
-  constructor(private readonly userService: UserService) {}
+  constructor(
+    private readonly userService: UserService,
+    @Inject(WINSTON_MODULE_NEST_PROVIDER) private readonly logger: Logger,
+  ) {
+    this.logger.log('UserController initialized');
+  }
 
   @Post()
   create(@Body() createUserDto: CreateUserDto) {
