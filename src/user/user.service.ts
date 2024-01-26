@@ -10,6 +10,7 @@ import { CreateUserDto } from './dto/create-user.dto';
 // import { UpdateUserDto } from './dto/update-user.dto';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Logs } from 'src/logs/logs.entity';
+import { ConditionUtil } from 'src/utils/db.helper';
 import * as svgCaptcha from 'svg-captcha';
 import { Repository } from 'typeorm';
 import { UpdateUserDto } from './dto/update-user.dto';
@@ -43,68 +44,82 @@ export class UserService {
     role?: number;
     gender?: string;
   }) {
-    type QueryCondition = { [key: string]: string | number } | null;
+    // type QueryCondition = { [key: string]: string | number } | null;
 
-    interface WhereConditions {
-      [key: string]: QueryCondition;
-    }
+    // interface WhereConditions {
+    //   [key: string]: QueryCondition;
+    // }
 
-    const conditionMap = new Map<string, (value: any) => QueryCondition>([
-      ['username', (keyword) => ({ Like: `%${keyword}%` })],
-      ['roles', (role) => ({ id: role })],
-      ['profile', (gender) => ({ gender: gender })],
-      // Add more fields and their processing functions...
-    ]);
+    // const conditionMap = new Map<string, (value: any) => QueryCondition>([
+    //   ['username', (keyword) => ({ Like: `%${keyword}%` })],
+    //   ['roles', (role) => ({ id: role })],
+    //   ['profile', (gender) => ({ gender: gender })],
+    //   // Add more fields and their processing functions...
+    // ]);
 
-    function buildWhereConditions(
-      ...args: [key: string, value: any][]
-    ): WhereConditions {
-      const where: WhereConditions = {};
-      for (const [key, value] of args) {
-        if (conditionMap.has(key) && value !== undefined) {
-          where[key] = conditionMap.get(key)(value);
-        }
-      }
-      return where;
-    }
+    // function buildWhereConditions(
+    //   ...args: [key: string, value: any][]
+    // ): WhereConditions {
+    //   const where: WhereConditions = {};
+    //   for (const [key, value] of args) {
+    //     if (conditionMap.has(key) && value !== undefined) {
+    //       where[key] = conditionMap.get(key)(value);
+    //     }
+    //   }
+    //   return where;
+    // }
 
-    function applyQueryCondition(
-      where: WhereConditions,
-      queryKey: string,
-      queryValue: any,
-    ): WhereConditions {
-      return queryValue
-        ? { ...where, ...buildWhereConditions([queryKey, queryValue]) }
-        : where;
-    }
+    // function applyQueryCondition(
+    //   where: WhereConditions,
+    //   queryKey: string,
+    //   queryValue: any,
+    // ): WhereConditions {
+    //   return queryValue
+    //     ? { ...where, ...buildWhereConditions([queryKey, queryValue]) }
+    //     : where;
+    // }
 
-    let where: WhereConditions = {};
-    where = applyQueryCondition(where, 'username', keyword);
-    where = applyQueryCondition(where, 'roles', role);
-    where = applyQueryCondition(where, 'profile', gender);
+    // let where: WhereConditions = {};
+    // where = applyQueryCondition(where, 'username', keyword);
+    // where = applyQueryCondition(where, 'roles', role);
+    // where = applyQueryCondition(where, 'profile', gender);
 
-    const data = await this.userRepository.find({
-      select: {
-        id: true,
-        username: true,
-        profile: {
-          id: true,
-          gender: true,
-        },
-      },
-      where,
-      order: { id: 'ASC' },
-      skip: (page - 1) * size,
-      take: size,
-      relations: { profile: true, roles: true },
-    });
+    // const data = await this.userRepository.find({
+    //   select: {
+    //     id: true,
+    //     username: true,
+    //     profile: {
+    //       id: true,
+    //       gender: true,
+    //     },
+    //   },
+    //   where,
+    //   order: { id: 'ASC' },
+    //   skip: (page - 1) * size,
+    //   take: size,
+    //   relations: { profile: true, roles: true },
+    // });
 
-    const total = await this.userRepository.count({ where });
-
-    return {
-      data,
-      total,
+    // const total = await this.userRepository.count({ where });
+    //  return {
+    //    data,
+    //    total,
+    //  };
+    //queryBuilder
+    const obj = {
+      'user.username': keyword,
+      'profile.gender': gender,
+      'roles.id': role,
     };
+    const queryBuilder = this.userRepository
+      .createQueryBuilder('user')
+      .leftJoinAndSelect('user.profile', 'profile')
+      .leftJoinAndSelect('user.roles', 'roles');
+    const newQuery = ConditionUtil<User>(queryBuilder, obj);
+    return newQuery
+      .take(size)
+      .skip((page - 1) * size)
+      .getMany();
   }
 
   findOne(id: number) {

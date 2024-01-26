@@ -26,6 +26,7 @@ export class AllExceptionFilter implements ExceptionFilter {
       exception instanceof HttpException
         ? exception.getStatus()
         : HttpStatus.INTERNAL_SERVER_ERROR;
+    let msg = exception['response'] || 'Internal Server Error';
 
     const responseBody = {
       headers: request.headers,
@@ -37,7 +38,7 @@ export class AllExceptionFilter implements ExceptionFilter {
       // IP信息
       ip: requestIp.getClientIp(request),
       exceptioin: exception['name'],
-      error: exception['response'] || 'Internal Server Error',
+      error: msg,
     };
 
     this.logger.error('[toimc]', responseBody);

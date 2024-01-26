@@ -17,15 +17,18 @@ import {
   Query,
   Req,
   Res,
+  UseFilters,
 } from '@nestjs/common';
 import { WINSTON_MODULE_NEST_PROVIDER } from 'nest-winston';
 import { Logger } from 'nestjs-pino';
+import { TypeormFilter } from 'src/filters/typeorm.filter';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { UserService } from './user.service';
 // import { UpdateUserDto } from './dto/update-user.dto';
 
 @Controller({ path: 'user', version: '1' })
+@UseFilters(new TypeormFilter())
 export class UserController {
   constructor(
     private readonly userService: UserService,
