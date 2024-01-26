@@ -30,7 +30,6 @@ export class ResourceService {
   }
 
   update(id: number, updateResourceDto: UpdateResourceDto) {
-    console.log(id, updateResourceDto);
     return {
       newInfo: updateResourceDto,
     };

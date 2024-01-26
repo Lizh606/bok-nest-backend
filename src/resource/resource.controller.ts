@@ -6,17 +6,17 @@
  * @Description: 请填写简介
  */
 import {
-  Controller,
-  Get,
-  Post,
   Body,
-  Param,
+  Controller,
   Delete,
-  Query,
+  Get,
+  Param,
   Patch,
+  Post,
+  Query,
 } from '@nestjs/common';
-import { ResourceService } from './resource.service';
 import { UpdateResourceDto } from './dto/update-resource.dto';
+import { ResourceService } from './resource.service';
 
 @Controller('resource')
 export class ResourceController {
@@ -24,7 +24,6 @@ export class ResourceController {
 
   @Post()
   create(@Body('name') body) {
-    console.log(body);
     return this.resourceService.create(body);
   }
 
@@ -35,7 +34,6 @@ export class ResourceController {
 
   @Get(':id')
   findOne(@Param('id') id: string) {
-    console.log(id);
     return this.resourceService.findOne(+id);
   }
 

@@ -44,7 +44,16 @@ export class UserController {
     return this.userService.findAll();
   }
   @Get('page')
-  findByPage(@Query() query: { keyword: string; page: number; size: number }) {
+  findByPage(
+    @Query()
+    query: {
+      keyword: string;
+      page: number;
+      size: number;
+      role: number;
+      gender: string;
+    },
+  ) {
     return this.userService.findByPage(query);
   }
   @Get(':id')

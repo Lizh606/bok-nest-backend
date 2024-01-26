@@ -11,7 +11,7 @@ import { CreateUserDto } from './dto/create-user.dto';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Logs } from 'src/logs/logs.entity';
 import * as svgCaptcha from 'svg-captcha';
-import { Like, Repository } from 'typeorm';
+import { Repository } from 'typeorm';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { User } from './entities/user.entity';
 
@@ -31,29 +31,76 @@ export class UserService {
     return res;
   }
   async findByPage({
-    keyword,
-    page,
-    size,
+    keyword = '',
+    page = 1,
+    size = 10,
+    role,
+    gender,
   }: {
-    keyword: string;
-    page: number;
-    size: number;
+    keyword?: string;
+    page?: number;
+    size?: number;
+    role?: number;
+    gender?: string;
   }) {
+    type QueryCondition = { [key: string]: string | number } | null;
+
+    interface WhereConditions {
+      [key: string]: QueryCondition;
+    }
+
+    const conditionMap = new Map<string, (value: any) => QueryCondition>([
+      ['username', (keyword) => ({ Like: `%${keyword}%` })],
+      ['roles', (role) => ({ id: role })],
+      ['profile', (gender) => ({ gender: gender })],
+      // Add more fields and their processing functions...
+    ]);
+
+    function buildWhereConditions(
+      ...args: [key: string, value: any][]
+    ): WhereConditions {
+      const where: WhereConditions = {};
+      for (const [key, value] of args) {
+        if (conditionMap.has(key) && value !== undefined) {
+          where[key] = conditionMap.get(key)(value);
+        }
+      }
+      return where;
+    }
+
+    function applyQueryCondition(
+      where: WhereConditions,
+      queryKey: string,
+      queryValue: any,
+    ): WhereConditions {
+      return queryValue
+        ? { ...where, ...buildWhereConditions([queryKey, queryValue]) }
+        : where;
+    }
+
+    let where: WhereConditions = {};
+    where = applyQueryCondition(where, 'username', keyword);
+    where = applyQueryCondition(where, 'roles', role);
+    where = applyQueryCondition(where, 'profile', gender);
+
     const data = await this.userRepository.find({
-      where: {
-        username: Like(`%${keyword}%`),
+      select: {
+        id: true,
+        username: true,
+        profile: {
+          id: true,
+          gender: true,
+        },
       },
-      order: {
-        id: 'DESC',
-      },
+      where,
+      order: { id: 'ASC' },
       skip: (page - 1) * size,
       take: size,
+      relations: { profile: true, roles: true },
     });
-    const total = await this.userRepository.count({
-      where: {
-        username: Like(`%${keyword}%`),
-      },
-    });
+
+    const total = await this.userRepository.count({ where });
+
     return {
       data,
       total,
