@@ -116,22 +116,31 @@ export class UserService {
       .leftJoinAndSelect('user.profile', 'profile')
       .leftJoinAndSelect('user.roles', 'roles');
     const newQuery = ConditionUtil<User>(queryBuilder, obj);
-    return newQuery
-      .take(size)
-      .skip((page - 1) * size)
-      .getMany();
+    return (
+      newQuery
+        .take(size)
+        .skip((page - 1) * size)
+        // getRawMany获取扁平数据，getMany获取数据包含数据结构
+        .getMany()
+    );
   }
 
   findOne(id: number) {
     return this.userRepository.findOne({ where: { id } });
   }
 
-  update(id: number, updateUserDto: UpdateUserDto) {
-    return this.userRepository.update(id, updateUserDto);
+  async update(id: number, updateUserDto: UpdateUserDto) {
+    // 联合模型更新，需使用save或queryBuilder
+    const userTemp = await this.findProfile(id);
+    const newUser = this.userRepository.merge(userTemp, updateUserDto);
+    return this.userRepository.save(newUser);
+    // 单模型更新，不适合关系模型
+    // return this.userRepository.update(id, updateUserDto);
   }
 
-  remove(id: number) {
-    return this.userRepository.delete(id);
+  async remove(id: number) {
+    const user = await this.findOne(id);
+    return this.userRepository.remove(user);
   }
   createCaptcha(req, res) {
     const captcha = svgCaptcha.create({

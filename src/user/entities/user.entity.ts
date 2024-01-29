@@ -19,7 +19,8 @@ export class User {
   username: string;
   @Column()
   password: string;
-  @OneToOne(() => Profile, (profile) => profile.user)
+  // cascade联合模型更新
+  @OneToOne(() => Profile, (profile) => profile.user, { cascade: true })
   profile: Profile;
   @OneToMany(() => Logs, (logs) => logs.user)
   logs: Logs[];

@@ -10,6 +10,7 @@ import {
   Controller,
   Delete,
   Get,
+  Headers,
   Inject,
   // Patch,
   Param,
@@ -17,6 +18,7 @@ import {
   Query,
   Req,
   Res,
+  UnauthorizedException,
   UseFilters,
 } from '@nestjs/common';
 import { WINSTON_MODULE_NEST_PROVIDER } from 'nest-winston';
@@ -65,8 +67,17 @@ export class UserController {
   }
 
   @Post(':id')
-  update(@Param('id') id: string, @Body() updateUserDto: UpdateUserDto) {
-    return this.userService.update(+id, updateUserDto);
+  update(
+    @Param('id') id: string,
+    @Body() updateUserDto: UpdateUserDto,
+    @Headers('Authorization') headers: any,
+  ) {
+    console.log(headers);
+    if (id === headers) {
+      return this.userService.update(+id, updateUserDto);
+    } else {
+      throw new UnauthorizedException();
+    }
   }
 
   @Delete(':id')
