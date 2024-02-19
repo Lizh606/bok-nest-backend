@@ -8,6 +8,8 @@ export enum ConfigEnum {
   DB_DATABASE = 'DB_DATABASE',
   DB_HOST = 'DB_HOST',
   DB_SYNC = 'DB_SYNC',
+
+  SECRET = 'SECRET',
 }
 export enum LogEnum {
   LOG_LEVEL = 'LOG_LEVEL',

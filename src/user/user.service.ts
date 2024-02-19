@@ -6,13 +6,13 @@
  * @Description: 请填写简介
  */
 import { Injectable } from '@nestjs/common';
-import { CreateUserDto } from './dto/create-user.dto';
 // import { UpdateUserDto } from './dto/update-user.dto';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Logs } from 'src/logs/logs.entity';
+import { Roles } from 'src/roles/roles.entity';
 import { ConditionUtil } from 'src/utils/db.helper';
 import * as svgCaptcha from 'svg-captcha';
-import { Repository } from 'typeorm';
+import { In, Repository } from 'typeorm';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { User } from './entities/user.entity';
 
@@ -21,8 +21,27 @@ export class UserService {
   constructor(
     @InjectRepository(User) private readonly userRepository: Repository<User>,
     @InjectRepository(Logs) private readonly logsRepository: Repository<Logs>,
+    @InjectRepository(Roles)
+    private readonly rolesRepository: Repository<Roles>,
   ) {}
-  async create(createUserDto: CreateUserDto) {
+  // Partial全部属性变成可选属性
+  async create(createUserDto: Partial<User>) {
+    if (!createUserDto.roles) {
+      const role = await this.rolesRepository.findOne({
+        where: { id: 2 },
+      });
+      createUserDto.roles = [role];
+    }
+    if (
+      createUserDto.roles instanceof Array &&
+      typeof createUserDto.roles[0] === 'number'
+    ) {
+      createUserDto.roles = await this.rolesRepository.find({
+        where: {
+          id: In(createUserDto.roles as Roles[]),
+        },
+      });
+    }
     const user = await this.userRepository.create(createUserDto);
     return this.userRepository.save(user);
   }
@@ -31,7 +50,7 @@ export class UserService {
     const res = await this.userRepository.find();
     return res;
   }
-  async findByPage({
+  async findByCondition({
     keyword = '',
     page = 1,
     size = 10,

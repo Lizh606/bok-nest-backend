@@ -14,18 +14,23 @@ import {
   Inject,
   // Patch,
   Param,
+  ParseIntPipe,
   Post,
   Query,
   Req,
   Res,
   UnauthorizedException,
   UseFilters,
+  UseGuards,
 } from '@nestjs/common';
+import { AuthGuard } from '@nestjs/passport';
 import { WINSTON_MODULE_NEST_PROVIDER } from 'nest-winston';
 import { Logger } from 'nestjs-pino';
 import { TypeormFilter } from 'src/filters/typeorm.filter';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
+import type { User } from './entities/user.entity';
+import { CreateUserPipe } from './pipes/create-user/create-user.pipe';
 import { UserService } from './user.service';
 // import { UpdateUserDto } from './dto/update-user.dto';
 
@@ -40,8 +45,8 @@ export class UserController {
   }
 
   @Post()
-  create(@Body() createUserDto: CreateUserDto) {
-    return this.userService.create(createUserDto);
+  create(@Body(CreateUserPipe) createUserDto: CreateUserDto) {
+    return this.userService.create(createUserDto as User);
   }
 
   @Get()
@@ -59,10 +64,10 @@ export class UserController {
       gender: string;
     },
   ) {
-    return this.userService.findByPage(query);
+    return this.userService.findByCondition(query);
   }
   @Get(':id')
-  findOne(@Param('id') id: string) {
+  findOne(@Param('id', ParseIntPipe) id: number) {
     return this.userService.findOne(+id);
   }
 
@@ -95,7 +100,12 @@ export class UserController {
     return this.userService.createUser(req, body);
   }
   @Get('profile/:id')
-  getUserProfile(@Param('id') id: number): any {
+  @UseGuards(AuthGuard('jwt'))
+  getUserProfile(
+    @Param('id') id: number,
+    // req是AuthGuard的validate返回的
+    // @Req() req,
+  ): any {
     return this.userService.findProfile(id);
   }
   @Get('logs/:id')

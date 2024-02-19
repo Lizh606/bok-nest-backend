@@ -18,6 +18,7 @@ import { AppService } from './app.service';
 import { LogsModule } from './logs/logs.module';
 import { ResourceModule } from './resource/resource.module';
 import { UserModule } from './user/user.module';
+import { AuthModule } from './auth/auth.module';
 // config插件获取获取（自动合并）
 // console.log(config.get('database'), config);
 const envFilePath = `.env.${process.env.NODE_ENV || 'development'}`;
@@ -63,6 +64,7 @@ const envFilePath = `.env.${process.env.NODE_ENV || 'development'}`;
       },
     }),
     LogsModule,
+    AuthModule,
   ],
   controllers: [AppController],
   providers: [AppService, Logger],
