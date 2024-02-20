@@ -23,10 +23,11 @@ import {
   UseFilters,
   UseGuards,
 } from '@nestjs/common';
-import { AuthGuard } from '@nestjs/passport';
 import { WINSTON_MODULE_NEST_PROVIDER } from 'nest-winston';
 import { Logger } from 'nestjs-pino';
 import { TypeormFilter } from 'src/filters/typeorm.filter';
+import { AdminGuard } from 'src/guards/admin/admin.guard';
+import { JwtGuard } from 'src/guards/jwt/jwt.guard';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 import type { User } from './entities/user.entity';
@@ -36,6 +37,7 @@ import { UserService } from './user.service';
 
 @Controller({ path: 'user', version: '1' })
 @UseFilters(new TypeormFilter())
+@UseGuards(JwtGuard)
 export class UserController {
   constructor(
     private readonly userService: UserService,
@@ -50,6 +52,13 @@ export class UserController {
   }
 
   @Get()
+  // 相同方法 从下往上执行
+  // @UseGuards(AdminGuard)
+  // @UseGuards(AuthGuard('jwt'))
+
+  // 如果传递多个守卫，则从前往后,前面guard不通过，后面的guard不执行
+  // @UseGuards(AuthGuard('jwt'), AdminGuard)
+  @UseGuards(AdminGuard)
   findAll() {
     return this.userService.findAll();
   }
@@ -100,24 +109,11 @@ export class UserController {
     return this.userService.createUser(req, body);
   }
   @Get('profile/:id')
-  @UseGuards(AuthGuard('jwt'))
   getUserProfile(
     @Param('id') id: number,
     // req是AuthGuard的validate返回的
     // @Req() req,
   ): any {
     return this.userService.findProfile(id);
-  }
-  @Get('logs/:id')
-  getUserLogs(@Param('id') id: number): any {
-    return this.userService.findLogs(id);
-  }
-  @Get('logsByGroup/:id')
-  async getUserLogsByGroup(@Param('id') id: number): Promise<any> {
-    const res = await this.userService.getUserLogsByGroup(id);
-    return res.map((i) => ({
-      result: i.result,
-      count: i.count,
-    }));
   }
 }

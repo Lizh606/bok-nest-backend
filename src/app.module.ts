@@ -15,10 +15,10 @@ import { LoggerModule } from 'nestjs-pino';
 import { connectionParams } from '../ormconfig';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
+import { AuthModule } from './auth/auth.module';
 import { LogsModule } from './logs/logs.module';
 import { ResourceModule } from './resource/resource.module';
 import { UserModule } from './user/user.module';
-import { AuthModule } from './auth/auth.module';
 // config插件获取获取（自动合并）
 // console.log(config.get('database'), config);
 const envFilePath = `.env.${process.env.NODE_ENV || 'development'}`;
@@ -67,7 +67,15 @@ const envFilePath = `.env.${process.env.NODE_ENV || 'development'}`;
     AuthModule,
   ],
   controllers: [AppController],
-  providers: [AppService, Logger],
+  providers: [
+    AppService,
+    Logger,
+    // 全局守卫
+    // {
+    //   provide: APP_GUARD,
+    //   useClass: AdminGuard,
+    // },
+  ],
   exports: [Logger],
 })
 export class AppModule {}

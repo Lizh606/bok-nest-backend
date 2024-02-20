@@ -15,7 +15,10 @@ import { WINSTON_MODULE_NEST_PROVIDER } from 'nest-winston';
 import { AllExceptionFilter } from './filters/all-exception.filter';
 
 async function bootstrap() {
-  const app = await NestFactory.create(AppModule);
+  const app = await NestFactory.create(AppModule, {
+    logger: false,
+    cors: true,
+  });
   app.enableVersioning({
     type: VersioningType.URI,
   });
@@ -42,6 +45,10 @@ async function bootstrap() {
       // whitelist: true, // 去除类上不存在的数据
     }),
   );
+
+  // 全局守卫
+  // app.useGlobalGuards()
+  // 弊端-无法使用di-无法使用userService
   await app.listen(3000);
   // logger.log('运行中ing');
 }
