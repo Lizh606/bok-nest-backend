@@ -1,4 +1,11 @@
-import { Body, Controller, Post, UseFilters } from '@nestjs/common';
+import {
+  Body,
+  ClassSerializerInterceptor,
+  Controller,
+  Post,
+  UseFilters,
+  UseInterceptors,
+} from '@nestjs/common';
 import { TypeormFilter } from 'src/filters/typeorm.filter';
 import { AuthService } from './auth.service';
 import { SignInUserDto } from './dto/signin-user.dto';
@@ -16,6 +23,7 @@ export class AuthController {
     };
   }
   @Post('/signUp')
+  @UseInterceptors(ClassSerializerInterceptor)
   signUp(@Body() dto: SignInUserDto) {
     const { username, password } = dto;
     return this.authService.signUp(username, password);

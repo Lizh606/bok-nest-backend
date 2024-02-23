@@ -50,13 +50,17 @@ async function bootstrap() {
   // 全局管道
   app.useGlobalPipes(
     new ValidationPipe({
-      // whitelist: true, // 去除类上不存在的数据
+      whitelist: true, // 去除类上不存在的数据
     }),
   );
 
   // 全局守卫
   // app.useGlobalGuards()
   // 弊端-无法使用di-无法使用userService
+
+  // 全局拦截器
+  // app.useGlobalInterceptors(new SerializeInterceptor());
+
   await app.listen(13000);
   // logger.log('运行中ing');
 }

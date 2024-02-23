@@ -1,3 +1,4 @@
+import { Exclude } from 'class-transformer';
 import { Logs } from 'src/logs/logs.entity';
 import { Roles } from 'src/roles/roles.entity';
 import {
@@ -18,6 +19,7 @@ export class User {
   @Column({ unique: true })
   username: string;
   @Column()
+  @Exclude()
   password: string;
   // cascade联合模型更新
   @OneToOne(() => Profile, (profile) => profile.user, { cascade: true })
