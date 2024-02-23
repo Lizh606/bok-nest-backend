@@ -10,15 +10,23 @@ import { HttpAdapterHost, NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
 
 import { ValidationPipe } from '@nestjs/common/pipes';
+import rateLimit from 'express-rate-limit';
 import * as session from 'express-session';
+import helmet from 'helmet';
 import { WINSTON_MODULE_NEST_PROVIDER } from 'nest-winston';
 import { AllExceptionFilter } from './filters/all-exception.filter';
-
 async function bootstrap() {
   const app = await NestFactory.create(AppModule, {
     logger: false,
     cors: true,
   });
+  app.use(helmet());
+  app.use(
+    rateLimit({
+      windowMs: 1 * 60 * 1000, // 1 minutes
+      max: 300, // limit each IP to 100 requests per windowMs
+    }),
+  );
   app.enableVersioning({
     type: VersioningType.URI,
   });
@@ -49,7 +57,7 @@ async function bootstrap() {
   // 全局守卫
   // app.useGlobalGuards()
   // 弊端-无法使用di-无法使用userService
-  await app.listen(3000);
+  await app.listen(13000);
   // logger.log('运行中ing');
 }
 bootstrap();

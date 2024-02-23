@@ -8,6 +8,7 @@
 import { Injectable } from '@nestjs/common';
 // import { UpdateUserDto } from './dto/update-user.dto';
 import { InjectRepository } from '@nestjs/typeorm';
+import * as argon2 from 'argon2';
 import { Logs } from 'src/logs/logs.entity';
 import { Roles } from 'src/roles/roles.entity';
 import { ConditionUtil } from 'src/utils/db.helper';
@@ -15,7 +16,6 @@ import * as svgCaptcha from 'svg-captcha';
 import { In, Repository } from 'typeorm';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { User } from './entities/user.entity';
-
 @Injectable()
 export class UserService {
   constructor(
@@ -43,6 +43,10 @@ export class UserService {
       });
     }
     const user = await this.userRepository.create(createUserDto);
+    // argon2密码加密
+    user.password = await argon2.hash(user.password);
+    console.log('pass', user.password);
+
     return this.userRepository.save(user);
   }
 

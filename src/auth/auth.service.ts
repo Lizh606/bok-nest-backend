@@ -1,7 +1,7 @@
-import { Injectable, UnauthorizedException } from '@nestjs/common';
+import { ForbiddenException, Injectable } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
+import * as argon2 from 'argon2';
 import { UserService } from 'src/user/user.service';
-
 @Injectable()
 export class AuthService {
   constructor(
@@ -10,25 +10,29 @@ export class AuthService {
   ) {}
   async signIn(username: string, password: string) {
     const data = await this.userService.findByCondition({ keyword: username });
-    if (data[0] && data[0].password === password) {
-      // 生成token
-      return await this.jwtService.signAsync(
-        {
-          username: username,
-          sub: data[0].id,
-        },
-        // 局部 - refreshToken
-        // {
-        //   expiresIn: '1d',
-        // },
-      );
+    if (!data[0]) {
+      throw new ForbiddenException('用户不存在呢');
     }
-    throw new UnauthorizedException();
+    const isPasswordValid = await argon2.verify(data[0].password, password);
+    if (!isPasswordValid) {
+      throw new ForbiddenException('用户名或密码错误');
+    }
+    return await this.jwtService.signAsync(
+      {
+        username: username,
+        sub: data[0].id,
+      },
+      // 局部 - refreshToken
+      // {
+      //   expiresIn: '1d',
+      // },
+    );
   }
   async signUp(username: string, password: string) {
-    // if (!username || !password) {
-    //   throw new HttpException('用户名或密码不存在', 400);
-    // }
+    const data = await this.userService.findByCondition({ keyword: username });
+    if (data[0]) {
+      throw new ForbiddenException('用户已存在呢');
+    }
     const res = await this.userService.create({
       username: username,
       password: password,

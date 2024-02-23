@@ -16,8 +16,6 @@ export class AdminGuard implements CanActivate {
     // 角色判断
     // 管理员
     const hasRole = (id) => {
-      console.log(id, 'iddd');
-
       return id === 1 || id === 2;
     };
     if (
