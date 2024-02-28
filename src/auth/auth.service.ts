@@ -9,8 +9,10 @@ export class AuthService {
     private jwtService: JwtService,
   ) {}
   async signIn(username: string, password: string) {
-    const data = await this.userService.findByCondition({ keyword: username });
-    if (!data[0]) {
+    const { data } = await this.userService.findByCondition({
+      keyword: username,
+    });
+    if (data.length === 0) {
       throw new ForbiddenException('用户不存在呢');
     }
     const isPasswordValid = await argon2.verify(data[0].password, password);

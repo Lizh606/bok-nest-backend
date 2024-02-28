@@ -3,7 +3,7 @@ import { IsNotEmpty, IsString, Length } from 'class-validator';
 export class SignInUserDto {
   @IsString()
   @IsNotEmpty()
-  @Length(6, 20, {
+  @Length(3, 20, {
     // $value: 当前用户传入的值
     // $property: 当前属性名
     // $target: 当前类

@@ -1,10 +1,11 @@
 import { IsNotEmpty, IsString, Length } from 'class-validator';
 import { Roles } from 'src/roles/roles.entity';
+import type { Profile } from '../entities/profile.entity';
 
 export class CreateUserDto {
   @IsString()
   @IsNotEmpty()
-  @Length(6, 20, {
+  @Length(3, 20, {
     // $value: 当前用户传入的值
     // $property: 当前属性名
     // $target: 当前类
@@ -17,5 +18,6 @@ export class CreateUserDto {
   @IsNotEmpty()
   @Length(6, 20)
   password: string;
+  profile?: Profile;
   roles?: Roles[] | number[];
 }

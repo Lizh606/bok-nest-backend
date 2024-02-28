@@ -13,11 +13,11 @@ export class Profile {
   id: number;
   @Column()
   gender: string;
-  @Column()
-  photo: string;
+  // @Column()
+  // photo?: string;
   @Column()
   address: string;
-  @OneToOne(() => User)
+  @OneToOne(() => User, { onDelete: 'CASCADE' })
   @JoinColumn()
   user: User;
 }

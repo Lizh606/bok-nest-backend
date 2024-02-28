@@ -10,7 +10,6 @@ import {
   Controller,
   Delete,
   Get,
-  Headers,
   Inject,
   // Patch,
   Param,
@@ -19,7 +18,6 @@ import {
   Query,
   Req,
   Res,
-  UnauthorizedException,
   UseFilters,
   UseGuards,
 } from '@nestjs/common';
@@ -28,8 +26,6 @@ import { Logger } from 'nestjs-pino';
 import { TypeormFilter } from 'src/filters/typeorm.filter';
 import { AdminGuard } from 'src/guards/admin/admin.guard';
 import { JwtGuard } from 'src/guards/jwt/jwt.guard';
-import { CreateUserDto } from './dto/create-user.dto';
-import { UpdateUserDto } from './dto/update-user.dto';
 import type { User } from './entities/user.entity';
 import { CreateUserPipe } from './pipes/create-user/create-user.pipe';
 import { UserService } from './user.service';
@@ -47,8 +43,8 @@ export class UserController {
   }
 
   @Post()
-  create(@Body(CreateUserPipe) createUserDto: CreateUserDto) {
-    return this.userService.create(createUserDto as User);
+  create(@Body(CreateUserPipe) createUserDto: Partial<User>) {
+    return this.userService.create(createUserDto);
   }
 
   @Get()
@@ -83,15 +79,10 @@ export class UserController {
   @Post(':id')
   update(
     @Param('id') id: string,
-    @Body() updateUserDto: UpdateUserDto,
-    @Headers('Authorization') headers: any,
+    @Body(CreateUserPipe) updateUserDto: Partial<User>,
+    // @Headers('Authorization') headers: any,
   ) {
-    console.log(headers);
-    if (id === headers) {
-      return this.userService.update(+id, updateUserDto);
-    } else {
-      throw new UnauthorizedException();
-    }
+    return this.userService.update(+id, updateUserDto);
   }
 
   @Delete(':id')

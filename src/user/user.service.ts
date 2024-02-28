@@ -14,7 +14,6 @@ import { Roles } from 'src/roles/roles.entity';
 import { ConditionUtil } from 'src/utils/db.helper';
 import * as svgCaptcha from 'svg-captcha';
 import { In, Repository } from 'typeorm';
-import { UpdateUserDto } from './dto/update-user.dto';
 import { User } from './entities/user.entity';
 @Injectable()
 export class UserService {
@@ -42,10 +41,10 @@ export class UserService {
         },
       });
     }
+
     const user = await this.userRepository.create(createUserDto);
     // argon2密码加密
     user.password = await argon2.hash(user.password);
-    console.log('pass', user.password);
 
     return this.userRepository.save(user);
   }
@@ -139,23 +138,48 @@ export class UserService {
       .leftJoinAndSelect('user.profile', 'profile')
       .leftJoinAndSelect('user.roles', 'roles');
     const newQuery = ConditionUtil<User>(queryBuilder, obj);
-    return (
-      newQuery
-        .take(size)
-        .skip((page - 1) * size)
-        // getRawMany获取扁平数据，getMany获取数据包含数据结构
-        .getMany()
-    );
+    const result = await newQuery
+      .take(size)
+      .skip((page - 1) * size)
+      .orderBy('user.id', 'DESC')
+      // getRawMany获取扁平数据，getMany获取数据包含数据结构
+      .getMany();
+    //暂时返回所有总数
+    const total = await this.userRepository.count({});
+
+    return {
+      data: result,
+      total: total,
+    };
   }
 
   findOne(id: number) {
     return this.userRepository.findOne({ where: { id } });
   }
 
-  async update(id: number, updateUserDto: UpdateUserDto) {
+  async update(id: number, updateUserDto: Partial<User>) {
+    if (
+      updateUserDto.roles instanceof Array &&
+      typeof updateUserDto.roles[0] === 'number'
+    ) {
+      updateUserDto.roles = await this.rolesRepository.find({
+        where: {
+          id: In(updateUserDto.roles as Roles[]),
+        },
+      });
+    }
     // 联合模型更新，需使用save或queryBuilder
-    const userTemp = await this.findProfile(id);
+    const userTemp = await this.userRepository.findOne({
+      where: { id },
+      relations: {
+        profile: true,
+        roles: true, // 连表查询出所有的的信息，如果不连表查询
+      },
+    });
+
     const newUser = this.userRepository.merge(userTemp, updateUserDto);
+    // console.log(userTemp, newUser, 333);
+
     return this.userRepository.save(newUser);
     // 单模型更新，不适合关系模型
     // return this.userRepository.update(id, updateUserDto);
