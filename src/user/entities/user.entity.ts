@@ -1,6 +1,6 @@
 import { Exclude } from 'class-transformer';
 import { Logs } from 'src/logs/logs.entity';
-import { Roles } from 'src/roles/roles.entity';
+import { Roles } from 'src/role/entities/role.entity';
 import {
   Column,
   Entity,
