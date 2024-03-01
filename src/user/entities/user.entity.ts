@@ -1,6 +1,4 @@
 import { Exclude } from 'class-transformer';
-import { Logs } from 'src/logs/logs.entity';
-import { Roles } from 'src/role/entities/role.entity';
 import {
   Column,
   Entity,
@@ -10,6 +8,8 @@ import {
   OneToOne,
   PrimaryGeneratedColumn,
 } from 'typeorm';
+import { Logs } from '../../logs/logs.entity';
+import { Roles } from '../../role/entities/role.entity';
 import { Profile } from './profile.entity';
 
 @Entity()

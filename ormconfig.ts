@@ -1,8 +1,8 @@
 import { TypeOrmModuleOptions } from '@nestjs/typeorm';
 import * as dotenv from 'dotenv';
 import * as fs from 'fs';
-import { ConfigEnum } from 'src/enum/config.enum';
 import { DataSource, DataSourceOptions } from 'typeorm';
+import { ConfigEnum } from './src/enum/config.enum';
 function getEnv(env: string): Record<string, unknown> {
   if (fs.existsSync(env)) {
     return dotenv.parse(fs.readFileSync(env));
