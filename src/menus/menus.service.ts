@@ -11,10 +11,7 @@ export class MenusService {
     @InjectRepository(Menus) private readonly menuRepository: Repository<Menus>,
   ) {}
   async create(createMenuDto: CreateMenuDto) {
-    console.log(createMenuDto);
-
     const menu = await this.menuRepository.create(createMenuDto);
-    console.log(menu);
 
     return this.menuRepository.save(menu);
   }

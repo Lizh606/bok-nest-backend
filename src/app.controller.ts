@@ -8,7 +8,6 @@
 import { Controller, Get, Logger, Query } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { AppService } from './app.service';
-import { ConfigEnum } from './enum/config.enum';
 @Controller()
 export class AppController {
   constructor(
@@ -21,9 +20,6 @@ export class AppController {
 
   @Get()
   getHello() {
-    console.log(this.configService.get('db'));
-    console.log(this.configService.get(ConfigEnum.DB));
-    console.log(this.configService.get(ConfigEnum.COMMON));
     return this.appService.getHello();
   }
   @Get('/range')

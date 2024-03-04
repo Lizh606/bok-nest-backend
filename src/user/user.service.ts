@@ -48,7 +48,12 @@ export class UserService {
 
     return this.userRepository.save(user);
   }
-
+  find(username: string) {
+    return this.userRepository.findOne({
+      where: { username },
+      relations: ['roles', 'roles.menus'],
+    });
+  }
   async findAll() {
     const res = await this.userRepository.find();
     return res;

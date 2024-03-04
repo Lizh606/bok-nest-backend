@@ -12,7 +12,6 @@ export class AdminGuard implements CanActivate {
       keyword: request.user.username,
     });
     const data = user.data;
-    console.log(data);
 
     // 角色判断
     // 管理员
