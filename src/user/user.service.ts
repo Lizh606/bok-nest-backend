@@ -51,11 +51,11 @@ export class UserService {
   find(username: string) {
     return this.userRepository.findOne({
       where: { username },
-      relations: ['roles', 'roles.menus'],
+      relations: ['roles', 'roles.menus', 'post'],
     });
   }
   async findAll() {
-    const res = await this.userRepository.find();
+    const res = await this.userRepository.find({ relations: ['posts'] });
     return res;
   }
   async findByCondition({

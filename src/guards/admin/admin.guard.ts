@@ -7,7 +7,7 @@ export class AdminGuard implements CanActivate {
   async canActivate(context: ExecutionContext): Promise<boolean> {
     // 获取请求对象
     const request = context.switchToHttp().getRequest();
-
+    request.body.userId = request.user.userId;
     const user = await this.userService.findByCondition({
       keyword: request.user.username,
     });

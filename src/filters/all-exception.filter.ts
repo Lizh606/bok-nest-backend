@@ -26,7 +26,7 @@ export class AllExceptionFilter implements ExceptionFilter {
       exception instanceof HttpException
         ? exception.getStatus()
         : HttpStatus.INTERNAL_SERVER_ERROR;
-    let msg = exception['response'] || 'Internal Server Error';
+    const msg = exception['response'] || 'Internal Server Error';
 
     const responseBody = {
       headers: request.headers,
@@ -41,7 +41,7 @@ export class AllExceptionFilter implements ExceptionFilter {
       error: msg,
     };
 
-    this.logger.error('[toimc]', responseBody);
+    this.logger.error('[hang]', responseBody);
     httpAdapter.reply(response, responseBody, httpStatus);
   }
 }

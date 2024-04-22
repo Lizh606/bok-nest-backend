@@ -1,4 +1,5 @@
 import { Exclude } from 'class-transformer';
+import { Post } from 'src/posts/entities/post.entity';
 import {
   Column,
   Entity,
@@ -29,4 +30,7 @@ export class User {
   @ManyToMany(() => Roles, (roles) => roles.users, { cascade: ['insert'] })
   @JoinTable({ name: 'user_roles' })
   roles: Roles[] | number[];
+
+  @OneToMany(() => Post, (posts) => posts.user)
+  posts: Post[];
 }

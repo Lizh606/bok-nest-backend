@@ -18,6 +18,7 @@ import { AppService } from './app.service';
 import { AuthModule } from './auth/auth.module';
 import { LogsModule } from './logs/logs.module';
 import { MenusModule } from './menus/menus.module';
+import { PostsModule } from './posts/posts.module';
 import { ResourceModule } from './resource/resource.module';
 import { RoleModule } from './role/role.module';
 import { UserModule } from './user/user.module';
@@ -70,6 +71,7 @@ const envFilePath = `.env.${process.env.NODE_ENV || 'development'}`;
     AuthModule,
     RoleModule,
     MenusModule,
+    PostsModule,
   ],
   controllers: [AppController],
   providers: [
