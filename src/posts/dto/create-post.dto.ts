@@ -9,8 +9,14 @@ export class CreatePostDto {
   @IsString()
   tag: string;
   @IsString()
-  content: string;
   @IsNotEmpty()
+  content: string;
+  @IsString()
+  @IsNotEmpty()
+  date: string;
+  @IsString()
+  description: string;
   @IsNumber()
+  @IsNotEmpty()
   userId?: number;
 }

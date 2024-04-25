@@ -17,8 +17,12 @@ export class Post {
   sort: string;
   @Column()
   tag: string;
-  @Column()
+  @Column('text')
   content: string;
+  @Column()
+  date: string;
+  @Column()
+  description: string;
   @ManyToOne(() => User, (user) => user.posts)
   @JoinColumn()
   user: User;

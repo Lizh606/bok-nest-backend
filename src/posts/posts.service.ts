@@ -1,6 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { UserService } from 'src/user/user.service';
+import { ConditionUtil } from 'src/utils/db.helper';
 import type { Repository } from 'typeorm';
 import { CreatePostDto } from './dto/create-post.dto';
 import { UpdatePostDto } from './dto/update-post.dto';
@@ -49,5 +50,34 @@ export class PostsService {
   async remove(id: number) {
     const post = await this.findOne(id);
     return this.postsRepository.remove(post);
+  }
+
+  async findByCondition({
+    keyword = '',
+    page = 1,
+    size = 10,
+  }: {
+    keyword?: string;
+    page?: number;
+    size?: number;
+  }) {
+    const obj = {
+      'post.title': keyword,
+    };
+    const queryBuilder = this.postsRepository.createQueryBuilder('post');
+    const newQuery = ConditionUtil<Post>(queryBuilder, obj);
+    const result = await newQuery
+      .take(size)
+      .skip((page - 1) * size)
+      .orderBy('post.id', 'DESC')
+      // getRawMany获取扁平数据，getMany获取数据包含数据结构
+      .getMany();
+    //暂时返回所有总数
+    const total = await this.postsRepository.count({});
+
+    return {
+      data: result,
+      total: total,
+    };
   }
 }

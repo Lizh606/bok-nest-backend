@@ -6,6 +6,7 @@ import {
   Param,
   Patch,
   Post,
+  Query,
   UseFilters,
   UseGuards,
 } from '@nestjs/common';
@@ -24,13 +25,21 @@ export class PostsController {
 
   @Post()
   create(@Body() createPostDto: CreatePostDto) {
-    console.log(createPostDto);
-
     return this.postsService.create(createPostDto);
   }
 
   @Get()
-  findAll() {
+  findAll(
+    @Query()
+    query: {
+      keyword: string;
+      page: number;
+      size: number;
+    },
+  ) {
+    if (query) {
+      return this.postsService.findByCondition(query);
+    }
     return this.postsService.findAll();
   }
 
