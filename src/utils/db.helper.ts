@@ -6,7 +6,7 @@ export const ConditionUtil = <T>(
 ) => {
   Object.keys(obj).forEach((key) => {
     if (obj[key]) {
-      queryBuilder.andWhere(`${key} = :${key}`, { [key]: obj[key] });
+      queryBuilder.andWhere(`${key} LIKE :${key}`, { [key]: `%${obj[key]}%` });
     }
   });
   return queryBuilder;
