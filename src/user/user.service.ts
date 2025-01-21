@@ -159,7 +159,17 @@ export class UserService {
   }
 
   findOne(id: number) {
-    return this.userRepository.findOne({ where: { id } });
+    return this.userRepository.findOne({
+      where: { id },
+      relations: ['roles', 'roles.menus', 'posts'],
+    });
+  }
+
+  findUserInfo(id: number) {
+    return this.userRepository.findOne({
+      where: { id },
+      relations: ['roles'],
+    });
   }
 
   async update(id: number, updateUserDto: Partial<User>) {
