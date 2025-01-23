@@ -193,8 +193,8 @@ export class UserService {
     });
 
     const newUser = this.userRepository.merge(userTemp, updateUserDto);
-    // console.log(userTemp, newUser, 333);
-
+    // argon2密码加密
+    newUser.password = await argon2.hash(newUser.password);
     return this.userRepository.save(newUser);
     // 单模型更新，不适合关系模型
     // return this.userRepository.update(id, updateUserDto);
