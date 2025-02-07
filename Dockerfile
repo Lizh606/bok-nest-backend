@@ -1,15 +1,27 @@
-# 运行的环境 -> Linux文件系统创建出来的 /usr /sys /dev /proc
-FROM node:14
+# 使用官方 Node.js 22.12.0 作为基础镜像
+FROM node:22.12.0
 
-# 工作目录及代码
-WORKDIR /app
+# 设置工作目录
+WORKDIR /usr/src/app
 
-# 构建命令 npm install && npm run build
+# 安装 pnpm
+RUN npm install -g pnpm
+
+# 复制 package.json 和 pnpm-lock.yaml (提前复制这些文件可以利用缓存)
+COPY package*.json pnpm-lock.yaml* ./
+
+# 安装依赖
+RUN pnpm install
+
+# 复制源代码和环境文件
 COPY . .
+COPY .env.production
 
-# 暴露的目录与端口
-VOLUME [ "/app/logs" ]
+# 构建应用
+RUN pnpm build
 
+# 暴露端口
 EXPOSE 13000
-# 运行程序的脚本或者命令
-CMD ["npm", "run", "start:prod"]
+
+# 启动应用
+CMD ["pnpm", "start:prod"]
