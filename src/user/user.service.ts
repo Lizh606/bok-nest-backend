@@ -161,7 +161,7 @@ export class UserService {
   findOne(id: number) {
     return this.userRepository.findOne({
       where: { id },
-      relations: ['roles', 'roles.menus', 'posts'],
+      relations: ['roles', 'roles.menus'],
     });
   }
 

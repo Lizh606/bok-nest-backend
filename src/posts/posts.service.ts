@@ -73,7 +73,12 @@ export class PostsService {
     const newQuery = ConditionUtil<Post>(queryBuilder, obj);
 
     if (userId) {
-      newQuery.andWhere('post.userId = :userId', { userId });
+      const { roles } = await this.userService.findOne(userId);
+      const isAdmin = roles.some((role) => Number(role.id) === 1);
+
+      if (!isAdmin) {
+        newQuery.andWhere('post.userId = :userId', { userId });
+      }
     }
 
     const result = await newQuery
