@@ -21,7 +21,10 @@ export class PostsService {
   }
 
   findAll() {
-    return this.postsRepository.find();
+    const posts = this.postsRepository.find();
+    console.log(posts);
+
+    return posts;
   }
 
   findOne(id: number) {
@@ -56,28 +59,50 @@ export class PostsService {
     keyword = '',
     page = 1,
     size = 10,
+    userId,
   }: {
     keyword?: string;
     page?: number;
     size?: number;
+    userId?: number;
   }) {
     const obj = {
       'post.title': keyword,
     };
     const queryBuilder = this.postsRepository.createQueryBuilder('post');
     const newQuery = ConditionUtil<Post>(queryBuilder, obj);
+
+    if (userId) {
+      newQuery.andWhere('post.userId = :userId', { userId });
+    }
+
     const result = await newQuery
       .take(size)
       .skip((page - 1) * size)
       .orderBy('post.id', 'DESC')
-      // getRawMany获取扁平数据，getMany获取数据包含数据结构
       .getMany();
-    //暂时返回所有总数
-    const total = await this.postsRepository.count({});
+
+    const total = await this.postsRepository.count({
+      where: userId ? { userId } : {},
+    });
 
     return {
       data: result,
       total: total,
+    };
+  }
+
+  async statistics() {
+    const total = await this.postsRepository.count({});
+    const sortStatistics = await this.postsRepository
+      .createQueryBuilder('post')
+      .select('post.sort', 'sort')
+      .addSelect('COUNT(*)', 'count')
+      .groupBy('post.sort')
+      .getRawMany();
+    return {
+      total,
+      sortStatistics,
     };
   }
 }

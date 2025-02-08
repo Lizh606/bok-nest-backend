@@ -14,6 +14,8 @@ export class Post {
   @Column({ unique: true })
   title: string;
   @Column()
+  userId: number;
+  @Column()
   sort: string;
   @Column()
   tag: string;

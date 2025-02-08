@@ -13,9 +13,14 @@ COPY package*.json pnpm-lock.yaml* ./
 # 安装依赖
 RUN pnpm install
 
-# 复制源代码和环境文件
+# 复制源代码
 COPY . .
-COPY .env.production
+
+# 复制环境文件
+COPY .env.production .env.production
+
+# 安装 pm2
+RUN npm install -g pm2
 
 # 构建应用
 RUN pnpm build
@@ -23,5 +28,6 @@ RUN pnpm build
 # 暴露端口
 EXPOSE 13000
 
-# 启动应用
-CMD ["pnpm", "start:prod"]
+# 启动应用 (只能有一个 CMD)
+CMD ["pm2-runtime", "start", "--name", "NestApp", "dist/src/main.js", "--", "cross-env", "NODE_ENV=production"]
+

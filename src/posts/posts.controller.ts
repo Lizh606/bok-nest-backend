@@ -16,6 +16,7 @@ import { JwtGuard } from 'src/guards/jwt/jwt.guard';
 import { CreatePostDto } from './dto/create-post.dto';
 import { UpdatePostDto } from './dto/update-post.dto';
 import { PostsService } from './posts.service';
+import { GetUserInfo } from 'src/decorators/user.decorator';
 
 @Controller('posts')
 @UseFilters(new TypeormFilter())
@@ -35,14 +36,21 @@ export class PostsController {
       keyword: string;
       page: number;
       size: number;
+      userId?: number;
     },
+    @GetUserInfo() user,
   ) {
+    const { userId } = user;
     if (query) {
+      query.userId = userId;
       return this.postsService.findByCondition(query);
     }
     return this.postsService.findAll();
   }
-
+  @Get('statistics')
+  statistics() {
+    return this.postsService.statistics();
+  }
   @Get(':id')
   findOne(@Param('id') id: string) {
     return this.postsService.findOne(+id);
