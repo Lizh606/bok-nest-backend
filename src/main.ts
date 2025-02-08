@@ -15,6 +15,8 @@ import * as session from 'express-session';
 import helmet from 'helmet';
 import { WINSTON_MODULE_NEST_PROVIDER } from 'nest-winston';
 import { AllExceptionFilter } from './filters/all-exception.filter';
+import { UserService } from './user/user.service';
+import { UserInterceptor } from './interceptors/user.interceptor';
 async function bootstrap() {
   const app = await NestFactory.create(AppModule, {
     logger: false,
@@ -59,7 +61,7 @@ async function bootstrap() {
   // 弊端-无法使用di-无法使用userService
 
   // 全局拦截器
-  // app.useGlobalInterceptors(new SerializeInterceptor());
+  app.useGlobalInterceptors(new UserInterceptor(app.get(UserService)));
 
   await app.listen(13000);
   // logger.log('运行中ing');

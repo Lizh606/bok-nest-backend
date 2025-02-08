@@ -7,6 +7,7 @@ import {
   Patch,
   Post,
   Query,
+  Req,
   UseFilters,
   UseGuards,
 } from '@nestjs/common';
@@ -16,7 +17,6 @@ import { JwtGuard } from 'src/guards/jwt/jwt.guard';
 import { CreatePostDto } from './dto/create-post.dto';
 import { UpdatePostDto } from './dto/update-post.dto';
 import { PostsService } from './posts.service';
-import { GetUserInfo } from 'src/decorators/user.decorator';
 
 @Controller('posts')
 @UseFilters(new TypeormFilter())
@@ -38,9 +38,10 @@ export class PostsController {
       size: number;
       userId?: number;
     },
-    @GetUserInfo() user,
+    @Req() req,
   ) {
-    const { userId } = user;
+    console.log(req, 333);
+    const { userId } = req.user;
     if (query) {
       query.userId = userId;
       return this.postsService.findByCondition(query);

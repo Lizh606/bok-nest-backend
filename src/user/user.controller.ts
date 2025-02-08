@@ -23,7 +23,6 @@ import {
 } from '@nestjs/common';
 import { WINSTON_MODULE_NEST_PROVIDER } from 'nest-winston';
 import { Logger } from 'nestjs-pino';
-import { GetUserInfo } from 'src/decorators/user.decorator';
 import { TypeormFilter } from 'src/filters/typeorm.filter';
 import { AdminGuard } from 'src/guards/admin/admin.guard';
 import { JwtGuard } from 'src/guards/jwt/jwt.guard';
@@ -73,8 +72,8 @@ export class UserController {
     return this.userService.findByCondition(query);
   }
   @Get('userInfo')
-  findUserInfo(@GetUserInfo() user) {
-    const { userId } = user;
+  findUserInfo(@Req() req) {
+    const { userId } = req.user;
     return this.userService.findUserInfo(+userId);
   }
 

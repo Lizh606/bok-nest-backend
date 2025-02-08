@@ -1,8 +1,11 @@
 import { createParamDecorator, ExecutionContext } from '@nestjs/common';
+import type { UserService } from 'src/user/user.service';
 
 export const GetUserInfo = createParamDecorator(
-  (data: unknown, ctx: ExecutionContext) => {
+  async (userService: UserService, ctx: ExecutionContext) => {
     const request = ctx.switchToHttp().getRequest();
-    return request.user;
+    const { userId } = request.user;
+    const userInfo = await userService.findOne(userId);
+    return userInfo;
   },
 );
