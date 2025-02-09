@@ -9,26 +9,35 @@ export class AuthService {
     private jwtService: JwtService,
   ) {}
   async signIn(username: string, password: string) {
-    const { data } = await this.userService.findByCondition({
-      keyword: username,
-    });
-    if (data.length === 0) {
-      throw new ForbiddenException('用户不存在呢');
-    }
-    const isPasswordValid = await argon2.verify(data[0].password, password);
-    if (!isPasswordValid) {
-      throw new ForbiddenException('用户名或密码错误');
-    }
-    return await this.jwtService.signAsync(
-      {
+    try {
+      const result = await this.userService.findByCondition({
+        keyword: username,
+      });
+
+      const users = Array.isArray(result.data) ? result.data : [];
+
+      if (users.length === 0) {
+        throw new ForbiddenException('用户不存在呢');
+      }
+
+      const user = users[0];
+      const isPasswordValid = await argon2.verify(user.password, password);
+
+      if (!isPasswordValid) {
+        throw new ForbiddenException('用户名或密码错误');
+      }
+
+      return await this.jwtService.signAsync({
         username: username,
-        sub: data[0].id,
-      },
-      // 局部 - refreshToken
-      // {
-      //   expiresIn: '1d',
-      // },
-    );
+        sub: user.id,
+      });
+    } catch (error) {
+      console.log(error);
+      if (error instanceof ForbiddenException) {
+        throw error;
+      }
+      throw new ForbiddenException('登录失败，请稍后重试');
+    }
   }
   async signUp(username: string, password: string) {
     const data = await this.userService.findByCondition({ keyword: username });
