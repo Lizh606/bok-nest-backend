@@ -60,6 +60,7 @@ jobs:
             
             # 使用 pnpm 安装依赖和构建
             pnpm install --no-frozen-lockfile
+            pnpm install -g cross-env
             pnpm run build
             
             # 使用完整路径启动 pm2
