@@ -75,5 +75,5 @@ jobs:
             pnpm install -g pm2
             
             # 重启应用
-            pm2 restart ./dist/src/main.js --name wanyue-server || pm2 start ./dist/src/main.js --name wanyue-server
+            pm2 restart pm2 start --name NestApp "cross-env NODE_ENV=production node dist/src/main"
           EOF
