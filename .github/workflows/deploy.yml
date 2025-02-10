@@ -35,6 +35,9 @@ jobs:
       # 将文件同步到服务器
       - name: Sync files to server
         run: |
+          # 如果目录不存在才创建
+          ssh ${{ secrets.USERNAME }}@${{ secrets.HOST }} '[ ! -d "/home/apps-server/wanyue-server" ] && mkdir -p /home/apps-server/wanyue-server || echo "Directory already exists"'
+          # 同步文件
           rsync -avz --delete ./ ${{ secrets.USERNAME }}@${{ secrets.HOST }}:/home/apps-server/wanyue-server/
 
       # SSH 连接服务器并重启应用
