@@ -55,15 +55,25 @@ jobs:
             nvm install 18.17.0
             nvm use 18.17.0
             
-            # 安装 pnpm
+            # 安装和设置 pnpm
             npm install -g pnpm
+            pnpm setup
+            source ~/.bashrc
+            
+            # 安装 cross-env
+            pnpm install -g cross-env
             
             # 使用 pnpm 安装依赖和构建
+            export PATH="$PATH:/home/apps-server/wanyue-server/node_modules/.bin"
+            export PNPM_HOME="$HOME/.local/share/pnpm"
+            export PATH="$PNPM_HOME:$PATH"
+            
             pnpm install --no-frozen-lockfile
-            pnpm install -g cross-env
             pnpm run build
             
-            # 使用完整路径启动 pm2
-            export PATH="$PATH:/home/apps-server/wanyue-server/node_modules/.bin"
-            pm2 restart ./dist/src/main.js --name wanyue-server
+            # 确保 pm2 已安装
+            pnpm install -g pm2
+            
+            # 重启应用
+            pm2 restart ./dist/src/main.js --name wanyue-server || pm2 start ./dist/src/main.js --name wanyue-server
           EOF
