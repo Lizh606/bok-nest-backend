@@ -17,6 +17,7 @@ import { WINSTON_MODULE_NEST_PROVIDER } from 'nest-winston';
 import { AllExceptionFilter } from './filters/all-exception.filter';
 import { UserService } from './user/user.service';
 import { UserInterceptor } from './interceptors/user.interceptor';
+import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 async function bootstrap() {
   const app = await NestFactory.create(AppModule, {
     logger: false,
@@ -62,6 +63,16 @@ async function bootstrap() {
 
   // 全局拦截器
   app.useGlobalInterceptors(new UserInterceptor(app.get(UserService)));
+
+  // 配置 Swagger
+  const options = new DocumentBuilder()
+    .setTitle('XiaoHang API')
+    .setDescription('XiaoHang API 接口文档')
+    .setVersion('1.0')
+    .addBearerAuth()
+    .build();
+  const document = SwaggerModule.createDocument(app, options);
+  SwaggerModule.setup('api-doc', app, document);
 
   await app.listen(13000);
   // logger.log('运行中ing');

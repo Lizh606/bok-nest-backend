@@ -6,23 +6,25 @@
  * @Description: 请填写简介
  */
 import { Controller, Get, Logger, Query } from '@nestjs/common';
-import { ConfigService } from '@nestjs/config';
+import { ApiOperation, ApiTags } from '@nestjs/swagger';
 import { AppService } from './app.service';
 @Controller()
+@ApiTags('公共测试接口')
 export class AppController {
   constructor(
     private readonly appService: AppService,
-    private readonly configService: ConfigService,
     private readonly logger: Logger,
   ) {
     this.logger.log('123');
   }
 
   @Get()
+  @ApiOperation({ summary: 'Hello World' })
   getHello() {
     return this.appService.getHello();
   }
   @Get('/range')
+  @ApiOperation({ summary: '获取一个指定长度的数字范围数组' })
   getRange(@Query('num') num: string): string[] {
     return this.appService.getRange(num);
   }

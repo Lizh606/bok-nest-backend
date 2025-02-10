@@ -17,8 +17,10 @@ import {
 } from '@nestjs/common';
 import { UpdateResourceDto } from './dto/update-resource.dto';
 import { ResourceService } from './resource.service';
+import { ApiTags } from '@nestjs/swagger';
 
 @Controller('resource')
+@ApiTags('资源管理（暂未启用）')
 export class ResourceController {
   constructor(private readonly resourceService: ResourceService) {}
 

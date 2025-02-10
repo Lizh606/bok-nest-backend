@@ -26,14 +26,25 @@ import { Logger } from 'nestjs-pino';
 import { TypeormFilter } from 'src/filters/typeorm.filter';
 import { AdminGuard } from 'src/guards/admin/admin.guard';
 import { JwtGuard } from 'src/guards/jwt/jwt.guard';
-import type { User } from './entities/user.entity';
+import { User } from './entities/user.entity';
 import { CreateUserPipe } from './pipes/create-user/create-user.pipe';
 import { UserService } from './user.service';
-// import { UpdateUserDto } from './dto/update-user.dto';
-
+import { UpdateUserDto } from './dto/update-user.dto';
+import {
+  ApiTags,
+  ApiOperation,
+  ApiBody,
+  ApiQuery,
+  ApiParam,
+  ApiBearerAuth,
+} from '@nestjs/swagger';
+import { CreateUserDto } from './dto/create-user.dto';
+import { PageQueryDto } from './dto/page-query.dto';
 @Controller({ path: 'user', version: '1' })
 @UseFilters(new TypeormFilter())
 @UseGuards(JwtGuard)
+@ApiTags('用户管理')
+@ApiBearerAuth()
 export class UserController {
   constructor(
     private readonly userService: UserService,
@@ -42,12 +53,15 @@ export class UserController {
     this.logger.log('UserController initialized');
   }
 
-  @Post()
+  @Post('create')
+  @ApiOperation({ summary: '创建用户' })
+  @ApiBody({ type: CreateUserDto })
   create(@Body(CreateUserPipe) createUserDto: Partial<User>) {
     return this.userService.create(createUserDto);
   }
 
-  @Get()
+  @Get('list')
+  @ApiOperation({ summary: '获取用户列表' })
   // 相同方法 从下往上执行
   // @UseGuards(AdminGuard)
   // @UseGuards(AuthGuard('jwt'))
@@ -59,6 +73,8 @@ export class UserController {
     return this.userService.findAll();
   }
   @Get('page')
+  @ApiOperation({ summary: '根据条件分页获取用户' })
+  @ApiQuery({ type: PageQueryDto })
   findByPage(
     @Query()
     query: {
@@ -72,17 +88,23 @@ export class UserController {
     return this.userService.findByCondition(query);
   }
   @Get('userInfo')
+  @ApiOperation({ summary: '根据token获取用户信息' })
   findUserInfo(@Req() req) {
     const { userId } = req.user;
     return this.userService.findUserInfo(+userId);
   }
 
   @Get(':id')
+  @ApiOperation({ summary: '根据id获取用户信息' })
+  @ApiParam({ name: 'id', description: '用户id', required: true })
   findOne(@Param('id', ParseIntPipe) id: number) {
     return this.userService.findOne(+id);
   }
 
   @Post(':id')
+  @ApiOperation({ summary: '更新用户' })
+  @ApiParam({ name: 'id', description: '用户id', required: true })
+  @ApiBody({ type: UpdateUserDto })
   update(
     @Param('id') id: string,
     @Body(CreateUserPipe) updateUserDto: Partial<User>,
@@ -92,20 +114,26 @@ export class UserController {
   }
 
   @Delete(':id')
+  @ApiOperation({ summary: '删除用户' })
+  @ApiParam({ name: 'id', description: '用户id', required: true })
   remove(@Param('id') id: string) {
     return this.userService.remove(+id);
   }
 
   @Get('code')
+  @ApiOperation({ summary: '创建验证码' })
   createCaptcha(@Req() req, @Res() res) {
     return this.userService.createCaptcha(req, res);
   }
 
-  @Post('create')
-  createUser(@Req() req, @Body() body) {
-    return this.userService.createUser(req, body);
-  }
+  // @Post('create')
+  // @ApiOperation({ summary: '创建用户' })
+  // createUser(@Req() req, @Body() body) {
+  //   return this.userService.createUser(req, body);
+  // }
   @Get('profile/:id')
+  @ApiOperation({ summary: '获取用户信息Profile' })
+  @ApiParam({ name: 'id', description: '用户id', required: true })
   getUserProfile(
     @Param('id') id: number,
     // req是AuthGuard的validate返回的

@@ -1,3 +1,4 @@
+import { ApiProperty } from '@nestjs/swagger';
 import { IsNotEmpty, IsString, Length } from 'class-validator';
 
 export class SignInUserDto {
@@ -10,10 +11,24 @@ export class SignInUserDto {
     // $constraint1: 最小长度 ...
     message: `用户名长度必须在$constraint1到$constraint2之间，当前传递的值是：$value`,
   })
+  @ApiProperty({
+    description: '用户名',
+    example: '',
+    required: true,
+    minLength: 3,
+    maxLength: 20,
+  })
   username: string;
 
   @IsString()
   @IsNotEmpty()
   @Length(6, 20)
+  @ApiProperty({
+    description: '密码',
+    example: '',
+    required: true,
+    minLength: 6,
+    maxLength: 20,
+  })
   password: string;
 }

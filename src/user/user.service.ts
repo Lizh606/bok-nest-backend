@@ -216,21 +216,21 @@ export class UserService {
     res.type('image/svg+xml');
     res.send(captcha.data);
   }
-  createUser(req, body) {
-    if (
-      req.session.code.toLocaleLowerCase() === body?.code?.toLocaleLowerCase()
-    ) {
-      return {
-        msg: '验证成功',
-        status: 'success',
-      };
-    } else {
-      return {
-        msg: '验证失败',
-        status: 'err',
-      };
-    }
-  }
+  // createUser(req, body) {
+  //   if (
+  //     req.session.code.toLocaleLowerCase() === body?.code?.toLocaleLowerCase()
+  //   ) {
+  //     return {
+  //       msg: '验证成功',
+  //       status: 'success',
+  //     };
+  //   } else {
+  //     return {
+  //       msg: '验证失败',
+  //       status: 'err',
+  //     };
+  //   }
+  // }
 
   findProfile(id: number) {
     return this.userRepository.findOne({
@@ -242,7 +242,9 @@ export class UserService {
   }
   async findLogs(id: number) {
     const user = await this.findOne(id);
-
+    console.log(user);
+    const res = await this.logsRepository.find();
+    console.log(res);
     return this.logsRepository.find({
       where: { user },
       // relations: {
