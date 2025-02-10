@@ -2,6 +2,22 @@
 version: '3.1'
 
 services:
+ nest-app:
+    container_name: nest-app
+    build:
+      context: ./
+      dockerfile: ./Dockerfile
+    # 定义该服务所依赖的其他服务，它们将按照依赖顺序启动
+    depends_on:
+      - db
+    # 定义项目环境变量
+    environment:
+      - NODE_ENV=prod
+    ports:
+      - '13000:13000'
+    networks:
+      - app-network
+
   db:
     image: mysql
     # NOTE: use of "mysql_native_password" is not recommended: https://dev.mysql.com/doc/refman/8.0/en/upgrading-from-previous-series.html#upgrade-caching-sha2-password

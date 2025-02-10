@@ -1,33 +1,35 @@
-# 使用官方 Node.js 22.12.0 作为基础镜像
-FROM node:22.12.0
+# 构建阶段
+FROM node:20.0 AS build-stage
 
-# 设置工作目录
-WORKDIR /usr/src/app
+WORKDIR /app
 
-# 安装 pnpm
-RUN npm install -g pnpm
+# 设置 npm 镜像源
+RUN npm config set registry https://registry.npmmirror.com/
 
-# 复制 package.json 和 pnpm-lock.yaml (提前复制这些文件可以利用缓存)
-COPY package*.json pnpm-lock.yaml* ./
+# 安装 pnpm 并设置 pnpm 镜像源
+RUN npm install -g pnpm \
+    && pnpm config set registry https://registry.npmmirror.com/
 
-# 安装依赖
+# 复制 package.json 和 pnpm-lock.yaml
+COPY package.json pnpm-lock.yaml ./
+
+# 使用 pnpm 安装依赖
 RUN pnpm install
 
-# 复制源代码
+# 复制所有源代码并构建应用
 COPY . .
+RUN pnpm run build
 
-# 复制环境文件
-COPY .env.production .env.production
+# 生产阶段
+FROM node:20 AS production-stage
 
-# 安装 pm2
-RUN npm install -g pm2
+WORKDIR /app
 
-# 构建应用
-RUN pnpm build
+# 从构建阶段复制构建结果和依赖
+COPY --from=build-stage /app/dist /app/dist
+COPY --from=build-stage /app/node_modules /app/node_modules
+# COPY --from=build-stage /app/config /app/config
 
-# 暴露端口
+# 暴露端口并启动应用
 EXPOSE 13000
-
-# 启动应用 (只能有一个 CMD)
-CMD ["pm2-runtime", "start", "--name", "NestApp", "dist/src/main.js", "--", "cross-env", "NODE_ENV=production"]
-
+CMD ["node", "dist/src/main.js"]
