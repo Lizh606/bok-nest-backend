@@ -45,10 +45,24 @@ jobs:
         run: |
           ssh ${{ secrets.USERNAME }}@${{ secrets.HOST }} << 'EOF'
             cd /home/apps-server/wanyue-server
+            
+            # 安装 nvm
+            curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.39.0/install.sh | bash
+            export NVM_DIR="$HOME/.nvm"
+            [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"
+            
+            # 安装并使用 Node.js 18.17.0
+            nvm install 18.17.0
+            nvm use 18.17.0
+            
             # 安装 pnpm
             npm install -g pnpm
+            
             # 使用 pnpm 安装依赖和构建
             pnpm install --no-frozen-lockfile
             pnpm run build
+            
+            # 使用完整路径启动 pm2
+            export PATH="$PATH:/home/apps-server/wanyue-server/node_modules/.bin"
             pm2 restart ./dist/src/main.js --name wanyue-server
           EOF
