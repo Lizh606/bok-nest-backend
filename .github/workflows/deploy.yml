@@ -1,37 +1,34 @@
-name: Deploy NestJS to Cloud Server via Docker
+name: Deploy to Server
 
 on:
   push:
-    branches:
-      - main # 你可以根据需求修改为其他分支
+    branches: [main] # 当推送到 main 分支时触发
 
 jobs:
-  build:
+  deploy:
     runs-on: ubuntu-latest
-
     steps:
-      # Checkout 代码
-      - name: Checkout code
-        uses: actions/checkout@v2
+      - uses: actions/checkout@v3
 
-      # 上传代码到云服务器
-      - name: Upload code to cloud server
-        uses: appleboy/ssh-action@v0.1.6
+      # 将代码复制到服务器
+      - name: Copy repository contents via scp
+        uses: appleboy/scp-action@master
         with:
           host: ${{ secrets.HOST }}
           username: ${{ secrets.USERNAME }}
           key: ${{ secrets.SSHPWD }}
-          port: 22
           source: '.'
-          target: '/home/wanyue-api/nestjs-backend'
+          target: '/home/nestjs-app'
 
-      # 在云服务器上构建并运行 Docker 镜像
-      - name: Build and run Docker image on server
-        run: |
-          ssh -o StrictHostKeyChecking=no -i ${{ secrets.SSHPWD }} user@47.102.86.191 << 'EOF'
-            cd /home/wanyue-api/nestjs-backend
-            docker build -t NestApp .
-            docker stop wanyue-api || true
-            docker rm wanyue-api || true
-            docker run -d --name wanyue-api -p 13000:13000 NestApp
-          EOF
+      # 在服务器上构建和启动
+      - name: Build and Deploy
+        uses: appleboy/ssh-action@master
+        with:
+          host: ${{ secrets.HOST }}
+          username: ${{ secrets.USERNAME }}
+          key: ${{ secrets.SSHPWD }}
+          script: |
+            cd /home/nestjs-app
+            docker-compose down
+            docker-compose build --no-cache
+            docker-compose up -d
