@@ -34,13 +34,13 @@ services:
       - --innodb-flush-log-at-trx-commit=0
 
   # navicat
-  adminer:
-    image: adminer
-    restart: always
-    ports:
-      - 12005:8080
-    networks:
-      - app-network
+  # adminer:
+  #   image: adminer
+  #   restart: always
+  #   ports:
+  #     - 12005:8080
+  #   networks:
+  #     - app-network
 
 # 添加网络配置
 networks:
