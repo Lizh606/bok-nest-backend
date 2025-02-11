@@ -22,7 +22,9 @@ services:
     ports:
       - '12000:3306'
     networks:
-      - app-network
+      app-network:
+        ipv4_address: 172.22.0.2
+
     volumes:
       - mysql_data_new:/var/lib/mysql
     command:
@@ -44,6 +46,10 @@ services:
 networks:
   app-network:
     driver: bridge
+    ipam:
+      driver: default
+      config:
+        - subnet: 172.22.0.0/16
 
 # 在文件末尾添加 volumes 配置
 volumes:
