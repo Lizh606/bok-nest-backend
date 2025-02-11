@@ -63,7 +63,7 @@ async function bootstrap() {
 
   // 全局拦截器
   app.useGlobalInterceptors(new UserInterceptor(app.get(UserService)));
-
+  app.setGlobalPrefix('api');
   // 配置 Swagger
   const options = new DocumentBuilder()
     .setTitle('XiaoHang API')
