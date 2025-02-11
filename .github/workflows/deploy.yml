@@ -1,79 +1,37 @@
-name: Deploy to CentOS Server
+name: Deploy NestJS to Cloud Server via Docker
 
 on:
   push:
     branches:
-      - main
+      - main # 你可以根据需求修改为其他分支
 
 jobs:
-  deploy:
+  build:
     runs-on: ubuntu-latest
 
     steps:
-      # 检出代码
+      # Checkout 代码
       - name: Checkout code
         uses: actions/checkout@v2
 
-      # 设置 Node.js
-      - name: Set up Node.js
-        uses: actions/setup-node@v3
+      # 上传代码到云服务器
+      - name: Upload code to cloud server
+        uses: appleboy/ssh-action@v0.1.6
         with:
-          node-version: 18.17.0
+          host: ${{ secrets.HOST }}
+          username: ${{ secrets.USERNAME }}
+          key: ${{ secrets.SSHPWD }}
+          port: 22
+          source: '.'
+          target: '/home/wanyue-api/nestjs-backend'
 
-      # 设置 SSH
-      - name: Set up SSH
-        uses: webfactory/ssh-agent@v0.5.3
-        with:
-          ssh-private-key: ${{ secrets.SSHPWD }}
-
-      # 设置 known_hosts
-      - name: Set up known hosts
+      # 在云服务器上构建并运行 Docker 镜像
+      - name: Build and run Docker image on server
         run: |
-          mkdir -p ~/.ssh
-          ssh-keyscan -H ${{ secrets.HOST }} >> ~/.ssh/known_hosts
-
-      # 将文件同步到服务器
-      - name: Sync files to server
-        run: |
-          # 如果目录不存在才创建
-          ssh ${{ secrets.USERNAME }}@${{ secrets.HOST }} '[ ! -d "/home/apps-server/wanyue-server" ] && mkdir -p /home/apps-server/wanyue-server || echo "Directory already exists"'
-          # 同步文件
-          rsync -avz --delete ./ ${{ secrets.USERNAME }}@${{ secrets.HOST }}:/home/apps-server/wanyue-server/
-
-      # SSH 连接服务器并重启应用
-      - name: Deploy application
-        run: |
-          ssh ${{ secrets.USERNAME }}@${{ secrets.HOST }} << 'EOF'
-            cd /home/apps-server/wanyue-server
-            
-            # 安装 nvm
-            curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.39.0/install.sh | bash
-            export NVM_DIR="$HOME/.nvm"
-            [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"
-            
-            # 安装并使用 Node.js 18.17.0
-            nvm install 18.17.0
-            nvm use 18.17.0
-            
-            # 安装和设置 pnpm
-            npm install -g pnpm
-            pnpm setup
-            source ~/.bashrc
-            
-            # 安装 cross-env
-            pnpm install -g cross-env
-            
-            # 使用 pnpm 安装依赖和构建
-            export PATH="$PATH:/home/apps-server/wanyue-server/node_modules/.bin"
-            export PNPM_HOME="$HOME/.local/share/pnpm"
-            export PATH="$PNPM_HOME:$PATH"
-            
-            pnpm install --no-frozen-lockfile
-            pnpm run build
-            
-            # 确保 pm2 已安装
-            pnpm install -g pm2
-            
-            # 重启应用
-            pm2 restart pm2 start --name NestApp "cross-env NODE_ENV=production node dist/src/main"
+          ssh -o StrictHostKeyChecking=no -i ${{ secrets.SSHPWD }} user@47.102.86.191 << 'EOF'
+            cd /home/wanyue-api/nestjs-backend
+            docker build -t NestApp .
+            docker stop wanyue-api || true
+            docker rm wanyue-api || true
+            docker run -d --name wanyue-api -p 13000:13000 NestApp
           EOF
