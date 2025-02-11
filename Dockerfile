@@ -2,14 +2,18 @@ FROM node:18-alpine
 
 WORKDIR /app
 
+# 安装 pnpm
+RUN npm install -g pnpm
+
 COPY package*.json ./
 
-RUN npm install
+# 使用 pnpm 安装依赖
+RUN pnpm install
 
 COPY . .
 
-RUN npm run build
+RUN pnpm run build
 
 EXPOSE 13000
 
-CMD ["npm", "run", "start:prod"]
+CMD ["pnpm", "run", "start:prod"]
