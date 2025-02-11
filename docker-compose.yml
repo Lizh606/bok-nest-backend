@@ -36,7 +36,7 @@ services:
     image: adminer
     restart: always
     ports:
-      - 12005:12005
+      - 12005:8080
 
 # 添加网络配置
 networks:
