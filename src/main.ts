@@ -63,15 +63,19 @@ async function bootstrap() {
 
   // 全局拦截器
   app.useGlobalInterceptors(new UserInterceptor(app.get(UserService)));
-  app.setGlobalPrefix('api');
   // 配置 Swagger
   const options = new DocumentBuilder()
     .setTitle('XiaoHang API')
     .setDescription('XiaoHang API 接口文档')
     .setVersion('1.0')
-    .addBearerAuth()
-    .build();
-  const document = SwaggerModule.createDocument(app, options);
+    .addBearerAuth();
+
+  // 在生产环境下添加 /api 前缀
+  if (process.env.NODE_ENV === 'production') {
+    options.addServer('/api');
+  }
+
+  const document = SwaggerModule.createDocument(app, options.build());
   SwaggerModule.setup('api-doc', app, document);
 
   await app.listen(13000);
