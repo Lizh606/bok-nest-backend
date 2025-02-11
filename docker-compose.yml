@@ -25,7 +25,8 @@ services:
     environment:
       MYSQL_ROOT_PASSWORD: 8jdgi5anfkr2gm00rza1wvhjm2i9o4fl
       MYSQL_DATABASE: bok_app
-
+    volumes:
+      - mysql_data:/var/lib/mysql
     ports:
       - '12000:3306'
     networks:
@@ -44,3 +45,7 @@ services:
 networks:
   app-network:
     driver: bridge
+
+# 添加数据卷定义
+volumes:
+  mysql_data:
