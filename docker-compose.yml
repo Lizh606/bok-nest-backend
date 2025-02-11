@@ -23,7 +23,7 @@ services:
     restart: always
     environment:
       MYSQL_ROOT_PASSWORD: 8jdgi5anfkr2gm00rza1wvhjm2i9o4fl
-      MYSQL_DATABASE: textdb
+      MYSQL_DATABASE: bok_app
     volumes:
       - mysql_data:/var/lib/mysql
     ports:
