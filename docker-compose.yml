@@ -28,7 +28,7 @@ services:
     volumes:
       - mysql_data:/var/lib/mysql
     ports:
-      - '12000:3306'
+      - '3306:3306'
     networks:
       - app-network
 
