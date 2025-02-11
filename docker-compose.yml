@@ -31,6 +31,13 @@ services:
     networks:
       - app-network
 
+  # navicat
+  adminer:
+    image: adminer
+    restart: always
+    ports:
+      - 12005:12005
+
 # 添加网络配置
 networks:
   app-network:
