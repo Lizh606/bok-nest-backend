@@ -16,4 +16,4 @@ RUN pnpm run build
 
 EXPOSE 13000
 
-CMD ["sh", "-c", "ls -la dist/src && node -v && npm -v && npm run start:prod"]
+CMD ["pnpm", "start:prod"]

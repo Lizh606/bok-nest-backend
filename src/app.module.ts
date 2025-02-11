@@ -43,6 +43,8 @@ const envFilePath = `.env.${process.env.NODE_ENV || 'development'}`;
         DB_HOST: Joi.alternatives().try(
           Joi.string().ip(),
           Joi.string().domain(),
+          Joi.string().hostname(),
+          Joi.string().valid('db'),
         ),
         DB_TYPE: Joi.string().valid('mysql', 'postgres').default('mysql'),
         DB_DATABASE: Joi.string().required(),

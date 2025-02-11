@@ -20,8 +20,8 @@ jobs:
           source: '.'
           target: '/home/nestjs-app'
 
-      # 在服务器上构建和启动
-      - name: Build and Deploy
+      # 在服务器上停止并构建应用
+      - name: Build Application
         uses: appleboy/ssh-action@master
         with:
           host: ${{ secrets.HOST }}
@@ -31,6 +31,14 @@ jobs:
             cd /home/nestjs-app
             docker-compose down
             docker-compose build --no-cache
+
+      # 部署应用
+      - name: Deploy Application
+        uses: appleboy/ssh-action@master
+        with:
+          host: ${{ secrets.HOST }}
+          username: ${{ secrets.USERNAME }}
+          key: ${{ secrets.SSHPWD }}
+          script: |
+            cd /home/nestjs-app
             docker-compose up -d
-          debug: true
-          script_stop: true

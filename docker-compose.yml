@@ -4,10 +4,14 @@ version: '3.1'
 services:
   nestjs-app:
     build: .
-    container_name: nestjs-app
     ports:
       - '13000:13000'
     restart: always
+    networks:
+      - app-network
+    depends_on:
+      - db
+
   db:
     image: mysql
     # NOTE: use of "mysql_native_password" is not recommended: https://dev.mysql.com/doc/refman/8.0/en/upgrading-from-previous-series.html#upgrade-caching-sha2-password
@@ -19,9 +23,7 @@ services:
     restart: always
     environment:
       MYSQL_ROOT_PASSWORD: 8jdgi5anfkr2gm00rza1wvhjm2i9o4fl
-      MYSQL_DATABASE: nestjs-backend
-      MYSQL_USER: lizh
-      MYSQL_PASSWORD: mch2lvy2o9vdo32md7bbs6kd2e7ctdcy
+      MYSQL_DATABASE: textdb
     volumes:
       - mysql_data:/var/lib/mysql
     ports:
