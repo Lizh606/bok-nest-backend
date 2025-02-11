@@ -16,4 +16,4 @@ RUN pnpm run build
 
 EXPOSE 13000
 
-CMD ["pnpm", "start:prod"]
+CMD ["sh", "-c", "ls -la /app && ls -la /app/dist/src && cat /app/dist/src/main.js && echo '\n环境变量:' && printenv && echo '\n正在启动应用...' && pnpm start:prod"]

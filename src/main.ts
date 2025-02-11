@@ -20,7 +20,7 @@ import { UserInterceptor } from './interceptors/user.interceptor';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 async function bootstrap() {
   const app = await NestFactory.create(AppModule, {
-    logger: false,
+    logger: ['error', 'warn', 'log', 'debug', 'verbose'],
     cors: true,
   });
   app.use(helmet());
