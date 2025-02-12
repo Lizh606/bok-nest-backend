@@ -7,7 +7,7 @@ export class CreatePostDto {
   title: string;
   @IsString()
   @ApiProperty({ description: '分类', example: '分类' })
-  category: string;
+  sort: string;
   @IsString()
   @ApiProperty({ description: '标签', example: '标签' })
   tag: string;
