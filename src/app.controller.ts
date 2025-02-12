@@ -28,4 +28,9 @@ export class AppController {
   getRange(@Query('num') num: string): string[] {
     return this.appService.getRange(num);
   }
+  @Get('/test')
+  @ApiOperation({ summary: '测试接口' })
+  getTest() {
+    return 'test';
+  }
 }
