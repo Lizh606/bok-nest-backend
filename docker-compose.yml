@@ -4,6 +4,7 @@ version: '3.1'
 services:
   api:
     build: .
+    image: nest-api
     container_name: nest-api
     ports:
       - '13000:13000'
