@@ -18,7 +18,7 @@ jobs:
           username: ${{ secrets.USERNAME }}
           key: ${{ secrets.SSHPWD }}
           source: '.'
-          target: '/home/nestjs-app'
+          target: '/home/blog/nest-api'
 
       # 在服务器上停止并构建应用
       - name: Build Application
@@ -28,6 +28,6 @@ jobs:
           username: ${{ secrets.USERNAME }}
           key: ${{ secrets.SSHPWD }}
           script: |
-            cd /home/nestjs-app
+            cd /home/blog/nest-api
             docker compose down
             docker compose up -d --build
