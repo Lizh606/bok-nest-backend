@@ -35,8 +35,8 @@ export class PostsController {
   @Post('create')
   @ApiOperation({ summary: '创建文章' })
   @ApiBody({ type: CreatePostDto })
-  create(@Body() createPostDto: CreatePostDto) {
-    return this.postsService.create(createPostDto);
+  create(@Req() req, @Body() createPostDto: CreatePostDto) {
+    return this.postsService.create(req, createPostDto);
   }
 
   @Get('list')
@@ -75,8 +75,12 @@ export class PostsController {
   @ApiOperation({ summary: '更新文章' })
   @ApiParam({ name: 'id', description: '文章ID' })
   @ApiBody({ type: UpdatePostDto })
-  update(@Param('id') id: string, @Body() updatePostDto: UpdatePostDto) {
-    return this.postsService.update(+id, updatePostDto);
+  update(
+    @Req() req,
+    @Param('id') id: string,
+    @Body() updatePostDto: UpdatePostDto,
+  ) {
+    return this.postsService.update(req, +id, updatePostDto);
   }
 
   @Delete(':id')

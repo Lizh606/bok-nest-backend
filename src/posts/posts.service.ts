@@ -13,8 +13,8 @@ export class PostsService {
     @InjectRepository(Post) private readonly postsRepository: Repository<Post>,
     private userService: UserService,
   ) {}
-  async create(createPostDto: CreatePostDto) {
-    const user = await this.userService.findOne(createPostDto.userId);
+  async create(req, createPostDto: CreatePostDto) {
+    const user = await this.userService.findOne(req.user.userId);
     const postInfo = { ...createPostDto, user };
     const post = await this.postsRepository.create(postInfo);
     return this.postsRepository.save(post);
@@ -36,8 +36,8 @@ export class PostsService {
     });
   }
 
-  async update(id: number, updatePostDto: UpdatePostDto) {
-    const user = await this.userService.findOne(updatePostDto.userId);
+  async update(req, id: number, updatePostDto: UpdatePostDto) {
+    const user = await this.userService.findOne(req.user.userId);
     const postTemp = await this.postsRepository.findOne({
       where: { id },
       relations: {
