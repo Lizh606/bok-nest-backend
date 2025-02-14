@@ -1,0 +1,21 @@
+FROM node:18-alpine
+
+WORKDIR /app
+
+# 安装 pnpm
+RUN npm install -g pnpm
+
+# 首先只复制包管理相关文件
+COPY package*.json pnpm-lock.yaml ./
+
+# 安装依赖
+RUN pnpm install
+
+# 复制源代码
+COPY . .
+
+# 暴露开发服务器端口
+EXPOSE 13000
+
+# 开发环境使用 start:dev 命令
+CMD ["pnpm", "start:dev"] 

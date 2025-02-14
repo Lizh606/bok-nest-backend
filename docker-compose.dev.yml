@@ -1,0 +1,57 @@
+# Use root/example as user/password credentials
+version: '3.1'
+
+services:
+  api:
+    build:
+      context: .
+      dockerfile: Dockerfile.dev
+    image: nest-api
+    container_name: nest-api
+    environment:
+      NODE_ENV: development
+    ports:
+      - '13000:13000'
+    networks:
+      - app-network
+    depends_on:
+      - db
+
+  db:
+    image: mysql:8.0
+    container_name: nest-db
+    restart: always
+    environment:
+      MYSQL_ROOT_PASSWORD: example
+      MYSQL_DATABASE: textdb
+    ports:
+      - '3306:3306'
+    networks:
+      - app-network
+
+    volumes:
+      - mysql_data_new:/var/lib/mysql
+    command:
+      - --default-authentication-plugin=mysql_native_password
+      - --character-set-server=utf8mb4
+      - --collation-server=utf8mb4_unicode_ci
+      - --innodb-flush-log-at-trx-commit=0
+
+  # navicat
+  # adminer:
+  #   image: adminer
+  #   restart: always
+  #   ports:
+  #     - 12005:8080
+  #   networks:
+  #     - app-network
+
+# 添加网络配置
+networks:
+  app-network:
+    driver: bridge
+
+# 在文件末尾添加 volumes 配置
+volumes:
+  mysql_data_new:
+    driver: local

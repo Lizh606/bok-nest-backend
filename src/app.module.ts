@@ -9,10 +9,8 @@ import { Global, Logger, Module } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
 import * as dotenv from 'dotenv';
 // import * as config from 'config';
-import { TypeOrmModule } from '@nestjs/typeorm';
 import * as Joi from 'joi';
 import { LoggerModule } from 'nestjs-pino';
-import { connectionParams } from '../ormconfig';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { AuthModule } from './auth/auth.module';
@@ -22,6 +20,9 @@ import { PostsModule } from './posts/posts.module';
 import { ResourceModule } from './resource/resource.module';
 import { RoleModule } from './role/role.module';
 import { UserModule } from './user/user.module';
+import { GithubModule } from './github/github.module';
+import { TypeOrmModule } from '@nestjs/typeorm';
+import { connectionParams } from '../ormconfig';
 // config插件获取获取（自动合并）
 // console.log(config.get('database'), config);
 const envFilePath = `.env.${process.env.NODE_ENV || 'development'}`;
@@ -29,6 +30,7 @@ const envFilePath = `.env.${process.env.NODE_ENV || 'development'}`;
 @Global()
 @Module({
   imports: [
+    TypeOrmModule.forRoot(connectionParams),
     UserModule,
     RoleModule,
     ResourceModule,
@@ -57,7 +59,6 @@ const envFilePath = `.env.${process.env.NODE_ENV || 'development'}`;
       envFilePath,
       load: [() => dotenv.config({ path: '.env' })],
     }),
-    TypeOrmModule.forRoot(connectionParams),
 
     LoggerModule.forRoot({
       pinoHttp: {
@@ -74,6 +75,7 @@ const envFilePath = `.env.${process.env.NODE_ENV || 'development'}`;
     RoleModule,
     MenusModule,
     PostsModule,
+    GithubModule,
   ],
   controllers: [AppController],
   providers: [
