@@ -2,28 +2,28 @@
 version: '3.1'
 
 services:
-  api:
-    build:
-      context: .
-      dockerfile: Dockerfile.dev
-    image: nest-api
-    container_name: nest-api
-    environment:
-      NODE_ENV: development
-    ports:
-      - '13000:13000'
-    networks:
-      - app-network
-    depends_on:
-      - db
+  # api:
+  #   build:
+  #     context: .
+  #     dockerfile: Dockerfile.dev
+  #   image: nest-api
+  #   container_name: nest-api
+  #   environment:
+  #     NODE_ENV: development
+  #   ports:
+  #     - '13000:13000'
+  #   networks:
+  #     - app-network
+  #   depends_on:
+  #     - db
 
   db:
     image: mysql:8.0
-    container_name: nest-db
+    container_name: db
     restart: always
     environment:
-      MYSQL_ROOT_PASSWORD: example
-      MYSQL_DATABASE: textdb
+      MYSQL_ROOT_PASSWORD: 8jdgi5anfkr2gm00rza1wvhjm2i9o4fl
+      MYSQL_DATABASE: bok_app
     ports:
       - '3306:3306'
     networks:
