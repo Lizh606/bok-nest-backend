@@ -168,7 +168,7 @@ export class UserService {
   findUserInfo(id: number) {
     return this.userRepository.findOne({
       where: { id },
-      relations: ['roles'],
+      relations: ['roles', 'profile'],
     });
   }
 
@@ -194,7 +194,9 @@ export class UserService {
 
     const newUser = this.userRepository.merge(userTemp, updateUserDto);
     // argon2密码加密
-    newUser.password = await argon2.hash(newUser.password);
+    if (updateUserDto.password) {
+      newUser.password = await argon2.hash(newUser.password);
+    }
     return this.userRepository.save(newUser);
     // 单模型更新，不适合关系模型
     // return this.userRepository.update(id, updateUserDto);
@@ -242,14 +244,8 @@ export class UserService {
   }
   async findLogs(id: number) {
     const user = await this.findOne(id);
-    console.log(user);
-    const res = await this.logsRepository.find();
-    console.log(res);
     return this.logsRepository.find({
       where: { user },
-      // relations: {
-      //   user: true,
-      // },
     });
   }
   getUserLogsByGroup(id: number) {
@@ -268,5 +264,11 @@ export class UserService {
         // .limit(3)
         .getRawMany()
     );
+  }
+  async changeStatus(id: number) {
+    const user = await this.findOne(id);
+    return this.update(id, {
+      status: user.status === 1 ? 0 : 1,
+    });
   }
 }

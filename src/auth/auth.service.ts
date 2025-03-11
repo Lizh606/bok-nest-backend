@@ -26,13 +26,19 @@ export class AuthService {
       if (!isPasswordValid) {
         throw new ForbiddenException('用户名或密码错误');
       }
+      if (user.status === 0) {
+        throw new ForbiddenException('用户已禁用');
+      }
+      await this.userService.update(user.id, {
+        lastLoginTime: new Date().toISOString(),
+      });
 
       return await this.jwtService.signAsync({
         username: username,
         sub: user.id,
       });
     } catch (error) {
-      console.log(error);
+      console.error(error);
       if (error instanceof ForbiddenException) {
         throw error;
       }
@@ -47,6 +53,9 @@ export class AuthService {
     const res = await this.userService.create({
       username: username,
       password: password,
+      createTime: new Date().toISOString(),
+      lastLoginTime: new Date().toISOString(),
+      status: 1,
     });
     return res;
   }

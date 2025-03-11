@@ -22,8 +22,6 @@ export class PostsService {
 
   findAll() {
     const posts = this.postsRepository.find();
-    console.log(posts);
-
     return posts;
   }
 

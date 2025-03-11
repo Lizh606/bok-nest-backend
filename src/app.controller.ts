@@ -5,18 +5,13 @@
  * @LastEditTime: 2023-12-14 09:34:26
  * @Description: 请填写简介
  */
-import { Controller, Get, Logger, Query } from '@nestjs/common';
+import { Controller, Get, Query } from '@nestjs/common';
 import { ApiOperation, ApiTags } from '@nestjs/swagger';
 import { AppService } from './app.service';
 @Controller()
 @ApiTags('公共测试接口')
 export class AppController {
-  constructor(
-    private readonly appService: AppService,
-    private readonly logger: Logger,
-  ) {
-    this.logger.log('123');
-  }
+  constructor(private readonly appService: AppService) {}
 
   @Get()
   @ApiOperation({ summary: 'Hello World' })

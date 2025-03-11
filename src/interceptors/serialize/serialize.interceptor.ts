@@ -11,11 +11,8 @@ import { Observable, map } from 'rxjs';
 export class SerializeInterceptor implements NestInterceptor {
   constructor(private dto: any) {}
   intercept(context: ExecutionContext, next: CallHandler): Observable<any> {
-    console.log('拦截器执行前');
-
     return next.handle().pipe(
       map((data) => {
-        console.log(data);
         return plainToInstance(this.dto, data, {
           // 设置为true之后，所有经过该interceptor的接口都需要设置Expose或Exclude
           // Expose就是设置哪些字段需要暴露，Exclude就是设置哪些字段不需要暴露

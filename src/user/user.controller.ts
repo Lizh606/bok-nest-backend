@@ -141,4 +141,11 @@ export class UserController {
   ): any {
     return this.userService.findProfile(id);
   }
+
+  @Get('changeStatus/:id')
+  @ApiOperation({ summary: '修改用户状态' })
+  @ApiParam({ name: 'id', description: '用户id', required: true })
+  changeStatus(@Param('id') id: number) {
+    return this.userService.changeStatus(+id);
+  }
 }

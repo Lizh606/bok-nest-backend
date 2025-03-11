@@ -11,19 +11,19 @@ import {
   UseFilters,
   UseGuards,
 } from '@nestjs/common';
+import {
+  ApiBearerAuth,
+  ApiBody,
+  ApiOperation,
+  ApiParam,
+  ApiTags,
+} from '@nestjs/swagger';
 import { TypeormFilter } from 'src/filters/typeorm.filter';
 import { AdminGuard } from 'src/guards/admin/admin.guard';
 import { JwtGuard } from 'src/guards/jwt/jwt.guard';
 import { CreatePostDto } from './dto/create-post.dto';
 import { UpdatePostDto } from './dto/update-post.dto';
 import { PostsService } from './posts.service';
-import {
-  ApiTags,
-  ApiBearerAuth,
-  ApiOperation,
-  ApiBody,
-  ApiParam,
-} from '@nestjs/swagger';
 @Controller('posts')
 @UseFilters(new TypeormFilter())
 @UseGuards(JwtGuard, AdminGuard)
@@ -51,7 +51,6 @@ export class PostsController {
     },
     @Req() req,
   ) {
-    console.log(req, 333);
     const { userId } = req.user;
     if (query) {
       query.userId = userId;

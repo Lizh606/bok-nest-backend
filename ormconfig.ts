@@ -29,6 +29,8 @@ function buildConnectionOptions() {
     // 同步本地的schema与数据库 -> 初始化的时候去使用
     synchronize: true,
     logging: process.env.NODE_ENV === 'development',
+    timezone: '+08:00', // 添加东八区时区配置
+    dateStrings: true,
   } as TypeOrmModuleOptions;
 }
 export const connectionParams = buildConnectionOptions();

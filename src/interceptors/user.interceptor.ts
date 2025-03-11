@@ -1,11 +1,11 @@
 import {
+  CallHandler,
+  ExecutionContext,
   Injectable,
   NestInterceptor,
-  ExecutionContext,
-  CallHandler,
 } from '@nestjs/common';
-import { UserService } from '../user/user.service';
 import { Observable } from 'rxjs';
+import { UserService } from '../user/user.service';
 
 @Injectable()
 export class UserInterceptor implements NestInterceptor {
@@ -19,7 +19,6 @@ export class UserInterceptor implements NestInterceptor {
 
     // 检查是否存在用户信息
     if (request.user && request.user.userId) {
-      console.log(request.user, 22);
       const { userId } = request.user;
       request.userInfo = await this.userService.findOne(userId);
       const isAdmin = request.userInfo.roles.some((role) => role.id === 1);

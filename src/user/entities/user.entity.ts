@@ -19,9 +19,20 @@ export class User {
   id: number;
   @Column({ unique: true })
   username: string;
+  @Column({ default: '' })
+  loginName: string;
   @Column()
   @Exclude()
   password: string;
+  @Column({ default: 1 }) // 1: 正常, 0: 禁用
+  status: number;
+  @Column({ name: 'last_login_time', type: 'timestamp' })
+  lastLoginTime: string;
+  @Column({
+    name: 'create_time',
+    type: 'timestamp',
+  })
+  createTime: string;
   // cascade联合模型更新
   @OneToOne(() => Profile, (profile) => profile.user, { cascade: true })
   profile: Profile;
