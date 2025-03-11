@@ -10,6 +10,15 @@ jobs:
     steps:
       - uses: actions/checkout@v3
 
+      # 添加缓存步骤
+      - name: Cache pnpm modules
+        uses: actions/cache@v3
+        with:
+          path: ~/.pnpm-store
+          key: ${{ runner.os }}-pnpm-${{ hashFiles('**/pnpm-lock.yaml') }}
+          restore-keys: |
+            ${{ runner.os }}-pnpm-
+
       # 将代码复制到服务器
       - name: Copy repository contents via scp
         uses: appleboy/scp-action@master
@@ -20,14 +29,15 @@ jobs:
           source: '.'
           target: '/home/blog/nest-api'
 
-      # 在服务器上停止并构建应用
+      # 在服务器上停止并构建应用，增加超时时间
       - name: Build Application
         uses: appleboy/ssh-action@master
         with:
           host: ${{ secrets.HOST }}
           username: ${{ secrets.USERNAME }}
           key: ${{ secrets.SSHPWD }}
+          command_timeout: '30m' # 增加命令超时时间为30分钟
           script: |
             cd /home/blog/nest-api
             docker compose down
-            docker compose up -d --build
+            docker compose up -d --build --no-cache
