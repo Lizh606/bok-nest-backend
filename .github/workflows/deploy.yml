@@ -36,8 +36,9 @@ jobs:
           host: ${{ secrets.HOST }}
           username: ${{ secrets.USERNAME }}
           key: ${{ secrets.SSHPWD }}
-          command_timeout: '30m' # 增加命令超时时间为30分钟
+          command_timeout: '30m'
           script: |
             cd /home/blog/nest-api
             docker compose down
-            docker compose up -d --build --no-cache
+            docker compose build --no-cache
+            docker compose up -d
