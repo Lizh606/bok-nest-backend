@@ -10,17 +10,12 @@ export class AuthService {
   ) {}
   async signIn(username: string, password: string) {
     try {
-      const result = await this.userService.findByCondition({
-        keyword: username,
-      });
+      const user = await this.userService.find(username);
 
-      const users = Array.isArray(result.data) ? result.data : [];
-
-      if (users.length === 0) {
+      if (!user) {
         throw new ForbiddenException('用户不存在呢');
       }
 
-      const user = users[0];
       const isPasswordValid = await argon2.verify(user.password, password);
 
       if (!isPasswordValid) {
@@ -32,7 +27,6 @@ export class AuthService {
       await this.userService.update(user.id, {
         lastLoginTime: new Date().toISOString(),
       });
-
       return await this.jwtService.signAsync({
         username: username,
         sub: user.id,
