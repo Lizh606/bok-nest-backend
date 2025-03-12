@@ -26,11 +26,12 @@ export class User {
   password: string;
   @Column({ default: 1 }) // 1: 正常, 0: 禁用
   status: number;
-  @Column({ name: 'last_login_time', type: 'timestamp' })
+  @Column({ name: 'last_login_time', type: 'timestamp', nullable: true })
   lastLoginTime: string;
   @Column({
     name: 'create_time',
     type: 'timestamp',
+    nullable: true,
   })
   createTime: string;
   // cascade联合模型更新
